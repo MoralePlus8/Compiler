@@ -1,6 +1,7 @@
 package global;
 
-public class StaticClass {
+public class Enums {
+
     public static enum SymbolCode{
         IDENFR,
         INTCON,
@@ -43,5 +44,9 @@ public class StaticClass {
         RBRACK,
         LBRACE,
         RBRACE;
+    }
+
+    public static enum ErrorCode{
+        a,b,c,d,e,f,g,h,i,j,k,l,m;
     }
 }

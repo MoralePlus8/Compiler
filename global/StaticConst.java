@@ -1,22 +1,25 @@
 package global;
 
-import java.util.ArrayList;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class StaticConst {
-    public static ArrayList<StaticClass.SymbolCode> keywordsTable = new ArrayList<>(){{
-        add(StaticClass.SymbolCode.MAINTK);
-        add(StaticClass.SymbolCode.CONSTTK);
-        add(StaticClass.SymbolCode.INTTK);
-        add(StaticClass.SymbolCode.CHARTK);
-        add(StaticClass.SymbolCode.BREAKTK);
-        add(StaticClass.SymbolCode.CONTINUETK);
-        add(StaticClass.SymbolCode.IFTK);
-        add(StaticClass.SymbolCode.ELSETK);
-        add(StaticClass.SymbolCode.FORTK);
-        add(StaticClass.SymbolCode.GETINTTK);
-        add(StaticClass.SymbolCode.GETCHARTK);
-        add(StaticClass.SymbolCode.PRINTFTK);
-        add(StaticClass.SymbolCode.RETURNTK);
-        add(StaticClass.SymbolCode.VOIDTK);
-    }};
+    public static HashMap<String, Enums.SymbolCode> keywordsTable = new HashMap<>();
+    static {
+        keywordsTable.put("const", Enums.SymbolCode.CONSTTK);
+        keywordsTable.put("if", Enums.SymbolCode.IFTK);
+        keywordsTable.put("main", Enums.SymbolCode.MAINTK);
+        keywordsTable.put("int", Enums.SymbolCode.INTTK);
+        keywordsTable.put("char", Enums.SymbolCode.CHARTK);
+        keywordsTable.put("break", Enums.SymbolCode.BREAKTK);
+        keywordsTable.put("return", Enums.SymbolCode.RETURNTK);
+        keywordsTable.put("else", Enums.SymbolCode.ELSETK);
+        keywordsTable.put("for", Enums.SymbolCode.FORTK);
+        keywordsTable.put("continue", Enums.SymbolCode.CONTINUETK);
+        keywordsTable.put("getint", Enums.SymbolCode.GETINTTK);
+        keywordsTable.put("getchar", Enums.SymbolCode.GETCHARTK);
+        keywordsTable.put("printf", Enums.SymbolCode.PRINTFTK);
+        keywordsTable.put("void", Enums.SymbolCode.VOIDTK);
+    }
 }

@@ -1,0 +1,8 @@
+int main(){
+    char c = '\'';
+    if(1 & 2){ //uiyvhbjkbn,m
+        printf("2024 Compiler\n");
+    }
+    return 0;
+}
+//wedfghjbnm

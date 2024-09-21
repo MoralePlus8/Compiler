@@ -1,8 +1,17 @@
 package global;
 
+import java.util.ArrayList;
+
 public class StaticVariable {
-    public static char ch;
+    public static char character;
+    public static boolean isNote;
     public static int intNumber;
     public static int characterCounter;
+    public static int lineCounter;
     public static String code;
+    public static String token;
+    public static Enums.SymbolCode symbol;
+    public static Enums.ErrorCode errorCode;
+    public static int errorLine;
+    public static ArrayList<ErrorPair> lexerErrors = new ArrayList<>();
 }

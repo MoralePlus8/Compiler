@@ -41,6 +41,7 @@ public class StaticConst {
         DeclThird.add(Enums.SymbolCode.COMMA);
         DeclThird.add(Enums.SymbolCode.SEMICN);
         DeclThird.add(Enums.SymbolCode.ASSIGN);
+        DeclThird.add(Enums.SymbolCode.LBRACK);
     }
 
     public static ArrayList<Enums.SymbolCode>  FuncDefFirst=new ArrayList<>();
@@ -85,8 +86,6 @@ public class StaticConst {
         StmtFirst.add(Enums.SymbolCode.INTCON);
         StmtFirst.add(Enums.SymbolCode.CHRCON);
     }
-
-
 
 
 

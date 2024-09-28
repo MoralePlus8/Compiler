@@ -1,8 +1,13 @@
 package frontend;
 
 import global.Enums;
+import global.ErrorPair;
 import global.SymbolPair;
 import global.TreeNode;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Collections;
 
 import static global.StaticConst.*;
 import static global.StaticVariable.*;
@@ -12,7 +17,9 @@ public class GrammarAnalyse {
     private static int index=1;
 
     public static void getNextSymbol(){
-        System.out.println(symbol+" "+token);
+        System.out.println(symbol+" "+token+"        "+lineCounter);
+        grammarOutput.append(symbol).append(" ").append(token).append("\n");
+
         SymbolPair symbolPair;
         if(index>=symbolPairs.size()){
             return;
@@ -20,6 +27,7 @@ public class GrammarAnalyse {
         symbolPair =symbolPairs.get(index);
         token= symbolPair.token;
         symbol= symbolPair.symbolCode;
+        lineCounter=symbolPair.lineCount;
         index++;
     }
 
@@ -34,18 +42,18 @@ public class GrammarAnalyse {
     }
 
     public static void error(Enums.ErrorCode errorCode){
-
+        errors.add(new ErrorPair(symbolPairs.get(index-2).lineCount,errorCode));
     }
 
 
 
     public static void CompUnit(TreeNode node){
 
-        token=symbolPairs.getFirst().token;
-        symbol=symbolPairs.getFirst().symbolCode;
+        token=symbolPairs.get(0).token;
+        symbol=symbolPairs.get(0).symbolCode;
 
         while(DeclFirst.contains(symbol) && DeclSecond.contains(secondSymbol())
-                && DeclThird.contains(thirdSymbol())){
+                && !FuncDefThird.contains(thirdSymbol())){
             TreeNode DeclNode=new TreeNode("Decl");
             node.children.add(DeclNode);
             Decl(DeclNode);
@@ -61,7 +69,10 @@ public class GrammarAnalyse {
         TreeNode MainFuncDefNode=new TreeNode("MainFuncDef");
         node.children.add(MainFuncDefNode);
         MainFuncDef(MainFuncDefNode);
+
+
         System.out.println("<CompUnit>");
+        grammarOutput.append("<CompUnit>").append("\n");
     }
 
     public static void Decl(TreeNode node){
@@ -92,7 +103,6 @@ public class GrammarAnalyse {
             node.children.add(ConstDefNode);
             ConstDef(ConstDefNode);
 
-            getNextSymbol();
             while(symbol.equals(Enums.SymbolCode.COMMA)){
                 TreeNode CommaNode=new TreeNode(",");
                 node.children.add(CommaNode);
@@ -110,7 +120,10 @@ public class GrammarAnalyse {
             }
             else error(Enums.ErrorCode.i);
         }
+
+
         System.out.println("<ConstDecl>");
+        grammarOutput.append("<ConstDecl>").append("\n");
     }
 
     public static void BType(TreeNode node){
@@ -149,6 +162,7 @@ public class GrammarAnalyse {
         ConstInitVal(ConstInitValNode);
 
         System.out.println("<ConstDef>");
+        grammarOutput.append("<ConstDef>").append("\n");
     }
 
     public static void ConstInitVal (TreeNode node){
@@ -194,6 +208,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<ConstInitVal>");
+        grammarOutput.append("<ConstInitVal>").append("\n");
     }
 
     public static void VarDecl(TreeNode node){
@@ -220,10 +235,10 @@ public class GrammarAnalyse {
             node.children.add(SemicNode);
             getNextSymbol();
         }
-
         else error(Enums.ErrorCode.i);
 
         System.out.println("<VarDecl>");
+        grammarOutput.append("<VarDecl>").append("\n");
     }
 
     public static void VarDef(TreeNode node){
@@ -240,7 +255,7 @@ public class GrammarAnalyse {
             node.children.add(ConstExpNode);
             ConstExp(ConstExpNode);
 
-            if (!symbol.equals(Enums.SymbolCode.RBRACE)) error(Enums.ErrorCode.k);
+            if (!symbol.equals(Enums.SymbolCode.RBRACK)) error(Enums.ErrorCode.k);
             else {
                 TreeNode RBracketNode = new TreeNode("]");
                 node.children.add(RBracketNode);
@@ -260,6 +275,7 @@ public class GrammarAnalyse {
 
 
         System.out.println("<VarDef>");
+        grammarOutput.append("<VarDef>").append("\n");
     }
 
     public static void InitVal(TreeNode node){
@@ -309,6 +325,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<InitVal>");
+        grammarOutput.append("<InitVal>").append("\n");
     }
 
     public static void FuncDef(TreeNode node){
@@ -342,6 +359,7 @@ public class GrammarAnalyse {
         Block(BlockNode);
 
         System.out.println("<FuncDef>");
+        grammarOutput.append("<FuncDef>").append("\n");
     }
 
     public static void MainFuncDef(TreeNode node){
@@ -369,11 +387,15 @@ public class GrammarAnalyse {
         Block(BlockNode);
 
         System.out.println("<MainFuncDef>");
+        grammarOutput.append("<MainFuncDef>").append("\n");
     }
 
     public static void FuncType(TreeNode node){
         node.children.add(new TreeNode(token));
         getNextSymbol();
+
+        System.out.println("<FuncType>");
+        grammarOutput.append("<FuncType>").append("\n");
     }
 
     public static void FuncFParams(TreeNode node){
@@ -392,6 +414,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<FuncFParams>");
+        grammarOutput.append("<FuncFParams>").append("\n");
     }
 
     public static void FuncFParam(TreeNode node){
@@ -407,17 +430,17 @@ public class GrammarAnalyse {
             TreeNode LBracketNode=new TreeNode("[");
             node.children.add(LBracketNode);
             getNextSymbol();
-        }
 
-        if(!symbol.equals(Enums.SymbolCode.RBRACK)){
-            TreeNode RBracketNode=new TreeNode("]");
-            node.children.add(RBracketNode);
-            getNextSymbol();
+            if(symbol.equals(Enums.SymbolCode.RBRACK)){
+                TreeNode RBracketNode=new TreeNode("]");
+                node.children.add(RBracketNode);
+                getNextSymbol();
+            }
+            else error(Enums.ErrorCode.k);
         }
-        else error(Enums.ErrorCode.k);
 
         System.out.println("<FuncFParam>");
-
+        grammarOutput.append("<FuncFParam>").append("\n");
     }
 
     public static void Block(TreeNode node){
@@ -436,6 +459,7 @@ public class GrammarAnalyse {
         getNextSymbol();
 
         System.out.println("<Block>");
+        grammarOutput.append("<Block>").append("\n");
     }
 
     public static void BlockItem(TreeNode node){
@@ -455,68 +479,101 @@ public class GrammarAnalyse {
 
     public static void Stmt(TreeNode node){
 
-        Enums.SymbolCode s=secondSymbol();
-
         if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
             TreeNode SemicNode=new TreeNode(";");
             node.children.add(SemicNode);
             getNextSymbol();
         }
 
-        else if(UnaryExpFirst.contains(symbol) && (s==null || (!s.equals(Enums.SymbolCode.ASSIGN)
-                && !s.equals(Enums.SymbolCode.LBRACK)))){
+
+        else if(symbol.equals(Enums.SymbolCode.IDENFR)){
+
+            int tempIndex=index;
+            String tempToken=token;
+            Enums.SymbolCode tempSymbol=symbol;
+            int grammarLen=grammarOutput.length();
+
+
+            TreeNode LValNode=new TreeNode("LVal");
+            node.children.add(LValNode);
+            LVal(LValNode);
+
+            if(!symbol.equals(Enums.SymbolCode.ASSIGN)){
+
+                node.children.remove(node.children.size()-1);
+                grammarOutput=new StringBuilder(grammarOutput.substring(0, grammarLen));
+                index=tempIndex;
+                token=tempToken;
+                symbol=tempSymbol;
+
+                TreeNode ExpNode=new TreeNode("Exp");
+                node.children.add(ExpNode);
+                Exp(ExpNode);
+
+
+                if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
+                    TreeNode SemicNode=new TreeNode(";");
+                    node.children.add(SemicNode);
+                    getNextSymbol();
+                }
+                else error(Enums.ErrorCode.i);
+            }
+
+            else{
+
+                TreeNode EQNode=new TreeNode("=");
+                node.children.add(EQNode);
+                getNextSymbol();
+
+                if(symbol.equals(Enums.SymbolCode.GETINTTK) || symbol.equals(Enums.SymbolCode.GETCHARTK)){
+
+                    TreeNode GetNode=new TreeNode(token);
+                    node.children.add(GetNode);
+                    getNextSymbol();
+
+                    TreeNode LParenNode=new TreeNode("(");
+                    node.children.add(LParenNode);
+                    getNextSymbol();
+
+                    if(symbol.equals(Enums.SymbolCode.RPARENT)){
+                        TreeNode RParenNode=new TreeNode(")");
+                        node.children.add(RParenNode);
+                        getNextSymbol();
+                    }
+                    else error(Enums.ErrorCode.j);
+                }
+
+                else{
+                    TreeNode ExpNode=new TreeNode("Exp");
+                    node.children.add(ExpNode);
+                    Exp(ExpNode);
+                }
+
+                if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
+                    TreeNode SemicNode=new TreeNode(";");
+                    node.children.add(SemicNode);
+                    getNextSymbol();
+                }
+                else error(Enums.ErrorCode.i);
+            }
+
+        }
+
+        else if(UnaryExpFirst.contains(symbol)){
             TreeNode ExpNode=new TreeNode("Exp");
             node.children.add(ExpNode);
             Exp(ExpNode);
 
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
                 TreeNode SemicNode=new TreeNode(";");
                 node.children.add(SemicNode);
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
-        }
-
-        else if(symbol.equals(Enums.SymbolCode.IDENFR)){
-            TreeNode LValNode=new TreeNode("LVal");
-            node.children.add(LValNode);
-            LVal(LValNode);
-
-            TreeNode EQNode=new TreeNode("=");
-            node.children.add(EQNode);
-            getNextSymbol();
-
-            if(symbol.equals(Enums.SymbolCode.GETINTTK) || symbol.equals(Enums.SymbolCode.GETCHARTK)){
-
-                TreeNode GetNode=new TreeNode(token);
-                node.children.add(GetNode);
-                getNextSymbol();
-
-                TreeNode LParenNode=new TreeNode("(");
-                node.children.add(LParenNode);
-                getNextSymbol();
-
-                if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                    TreeNode RParenNode=new TreeNode(")");
-                    node.children.add(RParenNode);
-                    getNextSymbol();
-                }
-                else error(Enums.ErrorCode.j);
-            }
-
-            else{
-                TreeNode ExpNode=new TreeNode("Exp");
-                node.children.add(ExpNode);
-                getNextSymbol();
-            }
-
-            if(symbol.equals(Enums.SymbolCode.SEMICN)){
-                TreeNode SemicNode=new TreeNode(";");
-                node.children.add(SemicNode);
-                getNextSymbol();
-            }
-            else error(Enums.ErrorCode.i);
-
         }
 
         else if(symbol.equals(Enums.SymbolCode.LBRACE)){
@@ -575,7 +632,7 @@ public class GrammarAnalyse {
                 ForStmt(ForStmtNode);
             }
 
-            TreeNode SemicNode=new TreeNode(";");
+            TreeNode SemicNode=new TreeNode(";");;
             node.children.add(SemicNode);
             getNextSymbol();
 
@@ -610,6 +667,7 @@ public class GrammarAnalyse {
             getNextSymbol();
 
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
                 TreeNode SemicNode=new TreeNode(";");
                 node.children.add(SemicNode);
                 getNextSymbol();
@@ -629,6 +687,7 @@ public class GrammarAnalyse {
             }
 
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
                 TreeNode SemicNode=new TreeNode(";");
                 node.children.add(SemicNode);
                 getNextSymbol();
@@ -667,6 +726,7 @@ public class GrammarAnalyse {
             else error(Enums.ErrorCode.j);
 
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
+
                 TreeNode SemicNode=new TreeNode(";");
                 node.children.add(SemicNode);
                 getNextSymbol();
@@ -675,6 +735,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<Stmt>");
+        grammarOutput.append("<Stmt>").append("\n");
     }
 
     public static void ForStmt(TreeNode node){
@@ -691,6 +752,7 @@ public class GrammarAnalyse {
         Exp(ExpNode);
 
         System.out.println("<ForStmt>");
+        grammarOutput.append("<ForStmt>").append("\n");
     }
 
     public static void Exp(TreeNode node){
@@ -700,6 +762,7 @@ public class GrammarAnalyse {
         AddExp(AddExpNode);
 
         System.out.println("<Exp>");
+        grammarOutput.append("<Exp>").append("\n");
     }
 
     public static void Cond(TreeNode node){
@@ -708,6 +771,7 @@ public class GrammarAnalyse {
         LOrExp(LOrExpNode);
 
         System.out.println("<Cond>");
+        grammarOutput.append("<Cond>").append("\n");
     }
 
     public static void LVal(TreeNode node){
@@ -733,6 +797,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<LVal>");
+        grammarOutput.append("<LVal>").append("\n");
     }
 
     public static void PrimaryExp(TreeNode node){
@@ -772,18 +837,21 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<PrimaryExp>");
+        grammarOutput.append("<PrimaryExp>").append("\n");
     }
 
     public static void Number(TreeNode node){
         node.children.add(new TreeNode(token));
         getNextSymbol();
         System.out.println("<Number>");
+        grammarOutput.append("<Number>").append("\n");
     }
 
     public static void Character(TreeNode node){
         node.children.add(new TreeNode(token));
         getNextSymbol();
         System.out.println("<Character>");
+        grammarOutput.append("<Character>").append("\n");
     }
 
     public static void UnaryExp(TreeNode node){
@@ -829,11 +897,15 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<UnaryExp>");
+        grammarOutput.append("<UnaryExp>").append("\n");
     }
 
     public static void UnaryOp(TreeNode node){
         node.children.add(new TreeNode(token));
         getNextSymbol();
+
+        System.out.println("<UnaryOp>");
+        grammarOutput.append("<UnaryOp>").append("\n");
     }
 
     public static void FuncRParams(TreeNode node){
@@ -852,6 +924,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<FuncRParams>");
+        grammarOutput.append("<FuncRParams>").append("\n");
     }
 
     public static void MulExp(TreeNode node){
@@ -860,6 +933,10 @@ public class GrammarAnalyse {
         UnaryExp(UnaryExpNode);
 
         while(token.equals("*") || token.equals("/") || token.equals("%")){
+
+            System.out.println("<MulExp>");
+            grammarOutput.append("<MulExp>").append("\n");
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -870,6 +947,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<MulExp>");
+        grammarOutput.append("<MulExp>").append("\n");
     }
 
     public static void AddExp(TreeNode node){
@@ -878,6 +956,10 @@ public class GrammarAnalyse {
         MulExp(MulExpNode);
 
         while(token.equals("+") || token.equals("-")){
+
+            System.out.println("<AddExp>");
+            grammarOutput.append("<AddExp>").append("\n");
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -888,6 +970,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<AddExp>");
+        grammarOutput.append("<AddExp>").append("\n");
     }
 
     public static void RelExp(TreeNode node){
@@ -897,6 +980,10 @@ public class GrammarAnalyse {
         AddExp(AddExpNode);
 
         while(token.equals(">") || token.equals("<") || token.equals(">=") || token.equals("<=")){
+
+            System.out.println("<RelExp>");
+            grammarOutput.append("<RelExp>").append("\n");
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -908,6 +995,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<RelExp>");
+        grammarOutput.append("<RelExp>").append("\n");
     }
 
     public static void EqExp(TreeNode node){
@@ -916,6 +1004,10 @@ public class GrammarAnalyse {
         RelExp(RelExpNode);
 
         while(token.equals("==") || token.equals("!=")){
+
+            System.out.println("<EqExp>");
+            grammarOutput.append("<EqExp>").append("\n");
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -926,6 +1018,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<EqExp>");
+        grammarOutput.append("<EqExp>").append("\n");
     }
 
     public static void LAndExp(TreeNode node){
@@ -934,6 +1027,9 @@ public class GrammarAnalyse {
         EqExp(EqExpNode);
 
         while(token.equals("&&")){
+            System.out.println("<LAndExp>");
+            grammarOutput.append("<LAndExp>").append("\n");
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -944,6 +1040,7 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<LAndExp>");
+        grammarOutput.append("<LAndExp>").append("\n");
     }
 
     public static void LOrExp(TreeNode node){
@@ -952,6 +1049,11 @@ public class GrammarAnalyse {
         LAndExp(LAndExpNode);
 
         while(token.equals("||")){
+
+            System.out.println("<LOrExp>");
+            grammarOutput.append("<LOrExp>").append("\n");
+
+
             TreeNode opNode=new TreeNode(token);
             node.children.add(opNode);
             getNextSymbol();
@@ -962,11 +1064,55 @@ public class GrammarAnalyse {
         }
 
         System.out.println("<LOrExp>");
+        grammarOutput.append("<LOrExp>").append("\n");
     }
 
     public static void ConstExp(TreeNode node){
         TreeNode AddExpNode=new TreeNode("AddExp");
         node.children.add(AddExpNode);
         AddExp(AddExpNode);
+
+        System.out.println("<ConstExp>");
+        grammarOutput.append("<ConstExp>").append("\n");
+    }
+
+
+
+
+
+
+
+    public static void parser(){
+        try{
+            File output = new File("./parser.txt");
+            File error = new File("./error.txt");
+            if (!output.exists()) output.createNewFile();
+            if (!error.exists()) error.createNewFile();
+            Lexer.clearFile("./parser.txt");
+            FileWriter writer = new FileWriter(output, true);
+            FileWriter errorWriter = new FileWriter(error, true);
+            grammarOutput= new StringBuilder();
+
+            CompUnit(root);
+
+
+            if(!errors.isEmpty()){
+                Collections.sort(errors);
+
+                for(ErrorPair errorPair : errors){
+                    errorWriter.write(errorPair.toString()+'\n');
+                    errorWriter.flush();
+                }
+            }
+
+            writer.write(grammarOutput.toString());
+            writer.flush();
+
+            writer.close();
+            errorWriter.close();
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }

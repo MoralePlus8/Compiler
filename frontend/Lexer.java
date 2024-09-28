@@ -21,7 +21,7 @@ public class Lexer {
             code = new String(content);
             code += "\0";
         } catch (IOException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -50,7 +50,14 @@ public class Lexer {
     }
 
     public static boolean isNewLine(){
-        return character == 10;
+        if(character == '\n') return true;
+        else if(character == '\r'){
+            if(code.charAt(characterCounter) == '\n'){
+                getNextCharacter();
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isTab(){
@@ -85,7 +92,7 @@ public class Lexer {
             fw.flush();
             fw.close();
         }catch(IOException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -155,7 +162,7 @@ public class Lexer {
             else{
                 errorCode = Enums.ErrorCode.a;
                 errorLine = lineCounter;
-                lexerErrors.add(new ErrorPair(errorLine, errorCode));
+                errors.add(new ErrorPair(errorLine, errorCode));
                 retract();
             }
         }
@@ -170,7 +177,7 @@ public class Lexer {
             else{
                 errorCode = Enums.ErrorCode.a;
                 errorLine = lineCounter;
-                lexerErrors.add(new ErrorPair(errorLine, errorCode));
+                errors.add(new ErrorPair(errorLine, errorCode));
                 retract();
             }
         }
@@ -211,10 +218,12 @@ public class Lexer {
                 do{
                     do{
                         getNextCharacter();
+                        if(isNewLine()) lineCounter++;
                     }while(character != '*');
 
                     do{
                         getNextCharacter();
+                        if(isNewLine()) lineCounter++;
                         if(character == '/'){
                             clearToken();
                             return;
@@ -228,6 +237,7 @@ public class Lexer {
                 do{
                     getNextCharacter();
                 }while(!isNewLine() && character != '\0');
+                lineCounter++;
                 clearToken();
                 return;
             }
@@ -333,28 +343,24 @@ public class Lexer {
             clearFile("./lexer.txt");
             clearFile("./error.txt");
             lineCounter = 1;
+
             do {
                 analyseNextToken();
                 if(!isNote && character != '\0'){
-                    symbolPairs.add(new SymbolPair(token, symbol));
+                    if(token.equals("&")) token+="&";
+                    if(token.equals("|")) token+="|";
+                    symbolPairs.add(new SymbolPair(token, symbol, lineCounter));
                     writer.write(symbol.name()+' '+token+'\n');
                     writer.flush();
                 }
             } while (character != '\0');
 
-            if(!lexerErrors.isEmpty()){
-                clearFile("./lexer.txt");
-                for(ErrorPair errorPair : lexerErrors){
-                    errorWriter.write(errorPair.toString()+'\n');
-                    writer.flush();
-                }
-            }
 
             writer.close();
             errorWriter.close();
 
         }catch (Exception e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 

@@ -13,7 +13,8 @@ public class StaticVariable {
     public static Enums.SymbolCode symbol;
     public static Enums.ErrorCode errorCode;
     public static int errorLine;
-    public static ArrayList<ErrorPair> lexerErrors = new ArrayList<>();
+    public static ArrayList<ErrorPair> errors = new ArrayList<>();
     public static ArrayList<SymbolPair> symbolPairs = new ArrayList<>();
     public static TreeNode root=new TreeNode("CompUnit");
+    public static StringBuilder grammarOutput=new StringBuilder();
 }

@@ -1,4 +1,4 @@
-const int v1=114514, v2=2;
+const int v1=114514, v2=2
 int v3, v4=4;
 int v5;
 const int v6=6;
@@ -10,7 +10,7 @@ char d,e,f;
 void getDEF(){
     d=getchar();
     e=getchar();
-    f=getchar();
+    f=getchar(;
     return;
 }
 
@@ -45,11 +45,11 @@ int main(){
 
     printf("%c%c%c%c%c%c%c\n",a,b,c,d,c,e,f);
 
-    printf("%d %d\n", plus(v3,v4), v4-v3);
+    printf("%d %d\n", plus(v3,v4), v4-v3;
 
     char ch='a';
     ch=upper(ch);
-    printf("%c\n",ch);
+    printf("%c\n",ch)
 
     if(v5<v7){
         printf("v7 is bigger! It is %d\n", v7);
@@ -65,7 +65,7 @@ int main(){
     }
 
     if(v7 != v5+v3){
-        printf("v7 is not equal to v5+v3\n");
+        printf("v7 is not equal to v5+v3\n")
     }
 
     if(v5 >= v2+v3){

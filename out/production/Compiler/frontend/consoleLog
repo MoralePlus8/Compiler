@@ -1,0 +1,42 @@
+11 1139 1145
+
+char_b2 [0];
+
+
+;]0[char_b2;char_a;const_int_a
+
+
+
+
+SEMICN ; ] 0 [ char_b2 ; char_a ; const_int_a { ) ( test_Lval_exp void
+
+void test_Lval_exp (){
+    const_int_a;
+    char_a;
+    char_b2[0];
+}
+
+
+ { ; return ch ; }
+
+ void test_Lval_exp ( )
+ {
+     const_int_a ;
+     char_a ;
+     char_b2 [ 0 ] ;
+     printf ( "test_Lval_exp success!\n" ) ;
+     return ;
+ }
+
+ void test_primary_exp ( ) { ( 1
+
+
+
+
+ 1
+ 13
+ 48
+ 52
+ 68
+
+

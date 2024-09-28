@@ -1,6 +1,6 @@
 package global;
 
-public class ErrorPair {
+public class ErrorPair implements Comparable<ErrorPair> {
     public int errorLine;
     public Enums.ErrorCode errorCode;
     public ErrorPair(int errorLine, Enums.ErrorCode errorCode) {
@@ -11,5 +11,10 @@ public class ErrorPair {
     @Override
     public String toString() {
         return Integer.toString(errorLine) + " " + errorCode.name();
+    }
+
+    @Override
+    public int compareTo(ErrorPair o) {
+        return this.errorLine - o.errorLine;
     }
 }

@@ -14,4 +14,6 @@ public class StaticVariable {
     public static Enums.ErrorCode errorCode;
     public static int errorLine;
     public static ArrayList<ErrorPair> lexerErrors = new ArrayList<>();
+    public static ArrayList<SymbolPair> symbolPairs = new ArrayList<>();
+    public static TreeNode root=new TreeNode("CompUnit");
 }

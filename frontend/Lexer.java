@@ -2,6 +2,7 @@ package frontend;
 
 import global.Enums;
 import global.ErrorPair;
+import global.SymbolPair;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -335,6 +336,7 @@ public class Lexer {
             do {
                 analyseNextToken();
                 if(!isNote && character != '\0'){
+                    symbolPairs.add(new SymbolPair(token, symbol));
                     writer.write(symbol.name()+' '+token+'\n');
                     writer.flush();
                 }

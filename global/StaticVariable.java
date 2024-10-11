@@ -1,6 +1,7 @@
 package global;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class StaticVariable {
     public static char character;
@@ -15,6 +16,11 @@ public class StaticVariable {
     public static int errorLine;
     public static ArrayList<ErrorPair> errors = new ArrayList<>();
     public static ArrayList<SymbolPair> symbolPairs = new ArrayList<>();
-    public static TreeNode root=new TreeNode("CompUnit");
+    public static TreeNode root=new TreeNode("CompUnit", Enums.V.CompUnit);
     public static StringBuilder grammarOutput=new StringBuilder();
+    public static int scopeCounter=0;
+    public static HashMap<Integer, Integer> outerScope = new HashMap<>();
+    public static HashMap<String, SymbolAttribute> symbolTable = new HashMap<>();
+    public static StringBuilder semanticOutput=new StringBuilder();
+
 }

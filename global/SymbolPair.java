@@ -9,5 +9,11 @@ public class SymbolPair {
         this.symbolCode= symbolCode;
         this.lineCount = lineCount;
     }
+
+    public SymbolPair(String token, int lineCount) {
+        this.token = token;
+        this.lineCount = lineCount;
+    }
+
     public SymbolPair() {}
 }

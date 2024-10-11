@@ -1,0 +1,10 @@
+1 f1 VoidFunc
+1 f2 VoidFunc
+1 f3 VoidFunc
+1 f4 VoidFunc
+2 x Int
+3 x IntArray
+4 x Char
+5 x CharArray
+6 a1 IntArray
+6 a2 CharArray

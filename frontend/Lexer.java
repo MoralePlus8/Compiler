@@ -336,8 +336,8 @@ public class Lexer {
             getCode("./testfile.txt");
             File output = new File("./lexer.txt");
             File error = new File("./error.txt");
-            if (!output.exists()) output.createNewFile();
-            if (!error.exists()) error.createNewFile();
+            if(!output.createNewFile()) Lexer.clearFile("./lexer.txt");
+            if(!error.createNewFile()) Lexer.clearFile("./error.txt");
             FileWriter writer = new FileWriter(output, true);
             FileWriter errorWriter = new FileWriter(error, true);
             clearFile("./lexer.txt");

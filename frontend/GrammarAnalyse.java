@@ -942,6 +942,10 @@ public class GrammarAnalyse {
 
         while(token.equals("*") || token.equals("/") || token.equals("%")){
 
+            TreeNode MulExpNode=new TreeNode("MulExp", MulExp);
+            MulExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(MulExpNode);
             System.out.println("<MulExp>");
             grammarOutput.append("<MulExp>").append("\n");
 
@@ -967,6 +971,11 @@ public class GrammarAnalyse {
 
         while(token.equals("+") || token.equals("-")){
 
+
+            TreeNode AddExpNode=new TreeNode("AddExp", AddExp);
+            AddExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(AddExpNode);
             System.out.println("<AddExp>");
             grammarOutput.append("<AddExp>").append("\n");
 
@@ -992,6 +1001,10 @@ public class GrammarAnalyse {
 
         while(token.equals(">") || token.equals("<") || token.equals(">=") || token.equals("<=")){
 
+            TreeNode RelExpNode=new TreeNode("RelExp", RelExp);
+            RelExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(RelExpNode);
             System.out.println("<RelExp>");
             grammarOutput.append("<RelExp>").append("\n");
 
@@ -1019,6 +1032,10 @@ public class GrammarAnalyse {
 
         while(token.equals("==") || token.equals("!=")){
 
+            TreeNode EqExpNode=new TreeNode("EqExp", EqExp);
+            EqExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(EqExpNode);
             System.out.println("<EqExp>");
             grammarOutput.append("<EqExp>").append("\n");
 
@@ -1042,6 +1059,10 @@ public class GrammarAnalyse {
         EqExp(EqExpNode);
 
         while(token.equals("&&")){
+            TreeNode LAndExpNode=new TreeNode("LAndExp", LAndExp);
+            LAndExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(LAndExpNode);
             System.out.println("<LAndExp>");
             grammarOutput.append("<LAndExp>").append("\n");
 
@@ -1059,12 +1080,17 @@ public class GrammarAnalyse {
     }
 
     public static void LOrExp(TreeNode node){
+
         TreeNode LAndExpNode=new TreeNode("LAndExp", LAndExp);
+
         node.children.add(LAndExpNode);
         LAndExp(LAndExpNode);
 
         while(token.equals("||")){
-
+            TreeNode LOrExpNode=new TreeNode("LOrExp", LOrExp);
+            LOrExpNode.children.addAll(node.children);
+            node.children.clear();
+            node.children.add(LOrExpNode);
             System.out.println("<LOrExp>");
             grammarOutput.append("<LOrExp>").append("\n");
 
@@ -1093,16 +1119,12 @@ public class GrammarAnalyse {
 
 
 
-
-
-
-
     public static void parser(){
         try{
             File output = new File("./parser.txt");
             File error = new File("./error.txt");
-            if (!output.exists()) output.createNewFile();
-            if (!error.exists()) error.createNewFile();
+            if(!output.createNewFile()) Lexer.clearFile("./parser.txt");
+            if(!error.createNewFile()) Lexer.clearFile("./error.txt");
             Lexer.clearFile("./parser.txt");
             FileWriter writer = new FileWriter(output, true);
             FileWriter errorWriter = new FileWriter(error, true);

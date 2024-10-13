@@ -1,0 +1,35 @@
+const int a1=0
+const int a2[2={1,2};
+const char c='c';
+const int a1=2;
+int a3=3
+int a4[2={1,2};
+int a3=4;
+
+int f1(int a, int b {
+    int ret=a+b;
+}
+
+void f1(int a, int b){
+    return a+b;
+}
+
+int f2(int a[ , int a){
+    return a[1]+a;
+}
+
+int main( {
+    a1=2;
+    for(;a1<3;a1=a1+1){
+        a3=a3+1;
+    }
+    break;
+    continue;
+    a1=getint();
+    c=getchar();
+    printf("abcdf%d", a1, a3);
+    a123=1;
+    a3=a123;
+    a3=f1(a1);
+    a3=f2(a1, a1);
+}

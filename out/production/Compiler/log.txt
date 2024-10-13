@@ -72,3 +72,12 @@ int main () {
 
 testcase14
 1:We got "21 d" when we expected "21 e" at line 1.
+
+
+
+
+
+
+
+testcase9
+1:We got nothing when we expected "1 j" at line 1.

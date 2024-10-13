@@ -115,9 +115,11 @@ public class GrammarAnalyse {
                 ConstDef(ConstDefNode2);
             }
 
+            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+            node.children.add(SemicNode);
+
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
-                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                node.children.add(SemicNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
@@ -148,10 +150,12 @@ public class GrammarAnalyse {
             node.children.add(ConstExpNode);
             ConstExp(ConstExpNode);
 
+            TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
+            node.children.add(RBracketNode);
+
             if(!symbol.equals(Enums.SymbolCode.RBRACK)) error(Enums.ErrorCode.k);
             else{
-                TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
-                node.children.add(RBracketNode);
+
                 getNextSymbol();
             }
         }
@@ -233,9 +237,11 @@ public class GrammarAnalyse {
             VarDef(VarDefNode2);
         }
 
+        TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+        node.children.add(SemicNode);
+
         if(symbol.equals(Enums.SymbolCode.SEMICN)){
-            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-            node.children.add(SemicNode);
+
             getNextSymbol();
         }
         else error(Enums.ErrorCode.i);
@@ -258,10 +264,12 @@ public class GrammarAnalyse {
             node.children.add(ConstExpNode);
             ConstExp(ConstExpNode);
 
+            TreeNode RBracketNode = new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
+            node.children.add(RBracketNode);
+
             if (!symbol.equals(Enums.SymbolCode.RBRACK)) error(Enums.ErrorCode.k);
             else {
-                TreeNode RBracketNode = new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
-                node.children.add(RBracketNode);
+
                 getNextSymbol();
             }
         }
@@ -350,9 +358,11 @@ public class GrammarAnalyse {
             FuncFParams(FuncFParamsNode);
         }
 
+        TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+        node.children.add(RParenNode);
+
         if(symbol.equals(Enums.SymbolCode.RPARENT)){
-            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-            node.children.add(RParenNode);
+
             getNextSymbol();
         }
         else error(Enums.ErrorCode.j);
@@ -378,9 +388,11 @@ public class GrammarAnalyse {
         node.children.add(LParenNode);
         getNextSymbol();
 
+        TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+        node.children.add(RParenNode);
+
         if(symbol.equals(Enums.SymbolCode.RPARENT)){
-            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-            node.children.add(RParenNode);
+
             getNextSymbol();
         }
         else error(Enums.ErrorCode.j);
@@ -436,9 +448,11 @@ public class GrammarAnalyse {
             node.children.add(LBracketNode);
             getNextSymbol();
 
+            TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
+            node.children.add(RBracketNode);
+
             if(symbol.equals(Enums.SymbolCode.RBRACK)){
-                TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
-                node.children.add(RBracketNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.k);
@@ -516,11 +530,10 @@ public class GrammarAnalyse {
                 node.children.add(ExpNode);
                 Exp(ExpNode);
 
+                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+                node.children.add(SemicNode);
 
                 if(symbol.equals(Enums.SymbolCode.SEMICN)){
-
-                    TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                    node.children.add(SemicNode);
                     getNextSymbol();
                 }
                 else error(Enums.ErrorCode.i);
@@ -543,9 +556,11 @@ public class GrammarAnalyse {
                     node.children.add(LParenNode);
                     getNextSymbol();
 
+                    TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+                    node.children.add(RParenNode);
+
                     if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                        TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-                        node.children.add(RParenNode);
+
                         getNextSymbol();
                     }
                     else error(Enums.ErrorCode.j);
@@ -557,10 +572,10 @@ public class GrammarAnalyse {
                     Exp(ExpNode);
                 }
 
-                if(symbol.equals(Enums.SymbolCode.SEMICN)){
+                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+                node.children.add(SemicNode);
 
-                    TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                    node.children.add(SemicNode);
+                if(symbol.equals(Enums.SymbolCode.SEMICN)){
                     getNextSymbol();
                 }
                 else error(Enums.ErrorCode.i);
@@ -573,10 +588,10 @@ public class GrammarAnalyse {
             node.children.add(ExpNode);
             Exp(ExpNode);
 
-            if(symbol.equals(Enums.SymbolCode.SEMICN)){
+            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+            node.children.add(SemicNode);
 
-                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                node.children.add(SemicNode);
+            if(symbol.equals(Enums.SymbolCode.SEMICN)){
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
@@ -601,9 +616,11 @@ public class GrammarAnalyse {
             node.children.add(CondNode);
             Cond(CondNode);
 
+            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+            node.children.add(RParenNode);
+
             if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-                node.children.add(RParenNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.j);
@@ -673,10 +690,12 @@ public class GrammarAnalyse {
             node.children.add(BCNode);
             getNextSymbol();
 
+            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+            node.children.add(SemicNode);
+
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
 
-                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                node.children.add(SemicNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
@@ -693,10 +712,12 @@ public class GrammarAnalyse {
                 Exp(ExpNode);
             }
 
+            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+            node.children.add(SemicNode);
+
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
 
-                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                node.children.add(SemicNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
@@ -725,17 +746,20 @@ public class GrammarAnalyse {
                 Exp(ExpNode);
             }
 
+            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+            node.children.add(RParenNode);
+
             if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-                node.children.add(RParenNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.j);
 
+            TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
+            node.children.add(SemicNode);
+
             if(symbol.equals(Enums.SymbolCode.SEMICN)){
 
-                TreeNode SemicNode=new TreeNode(";", Enums.V.SEMICN, lineCounter, node);
-                node.children.add(SemicNode);
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.i);
@@ -795,9 +819,11 @@ public class GrammarAnalyse {
             node.children.add(ExpNode);
             Exp(ExpNode);
 
+            TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
+            node.children.add(RBracketNode);
+
             if(symbol.equals(Enums.SymbolCode.RBRACK)){
-                TreeNode RBracketNode=new TreeNode("]", Enums.V.RBRACK, lineCounter, node);
-                node.children.add(RBracketNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.k);
@@ -817,9 +843,11 @@ public class GrammarAnalyse {
             node.children.add(ExpNode);
             Exp(ExpNode);
 
+            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+            node.children.add(RParenNode);
+
             if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-                node.children.add(RParenNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.j);
@@ -838,7 +866,7 @@ public class GrammarAnalyse {
         }
 
         else if(symbol.equals(Enums.SymbolCode.CHRCON)){
-            TreeNode CharNode=new TreeNode("Character", Enums.V.CHRCON, lineCounter, node);
+            TreeNode CharNode=new TreeNode("Character", Enums.V.Character, lineCounter, node);
             node.children.add(CharNode);
             Character(CharNode);
         }
@@ -855,7 +883,7 @@ public class GrammarAnalyse {
     }
 
     public static void Character(TreeNode node){
-        node.children.add(new TreeNode(token, Enums.V.Character, lineCounter, node));
+        node.children.add(new TreeNode(token, CHRCON, lineCounter, node));
         getNextSymbol();
         System.out.println("<Character>");
         grammarOutput.append("<Character>").append("\n");
@@ -878,9 +906,11 @@ public class GrammarAnalyse {
                 FuncRParams(FuncRParamsNode);
             }
 
+            TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
+            node.children.add(RParenNode);
+
             if(symbol.equals(Enums.SymbolCode.RPARENT)){
-                TreeNode RParenNode=new TreeNode(")", Enums.V.RPARENT, lineCounter, node);
-                node.children.add(RParenNode);
+
                 getNextSymbol();
             }
             else error(Enums.ErrorCode.j);
@@ -1132,16 +1162,6 @@ public class GrammarAnalyse {
             grammarOutput= new StringBuilder();
 
             CompUnit(root);
-
-
-//            if(!errors.isEmpty()){
-//                Collections.sort(errors);
-//
-//                for(ErrorPair errorPair : errors){
-//                    errorWriter.write(errorPair.toString()+'\n');
-//                    errorWriter.flush();
-//                }
-//            }
 
             writer.write(grammarOutput.toString());
             writer.flush();

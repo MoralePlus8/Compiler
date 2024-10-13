@@ -36,44 +36,137 @@ public class SemanticAnalyse {
     }
 
     public static boolean hasReturn(TreeNode node){
-        if(node.children.isEmpty()){
-            return node.symbolName.equals("return");
+        TreeNode lastBI=node.children.get(node.children.size()-2);
+        if(lastBI.nodeType==Enums.V.BlockItem){
+            TreeNode stmt=lastBI.children.get(0);
+            return stmt.nodeType == Enums.V.Stmt && stmt.children.get(0).nodeType == Enums.V.RETURNTK;
         }
-        boolean ret=false;
-        for(TreeNode n: node.children){
-            if(n.nodeType!= Enums.V.Block && hasReturn(n)) {
-                ret=true;
-            }
-        }
-        return ret;
+        return false;
     }
 
-    public static String getTypeOfExp(TreeNode ExpNode, int scope){
-        ArrayList<TreeNode> sentence=new ArrayList<>();
-        getAllVt(ExpNode,sentence);
-        String s="";
-        for(TreeNode n: sentence){
-            if(n.nodeType==Enums.V.IDENFR){
-                SymbolAttribute symbol=getIndent(n.symbolName, scope);
-                if(symbol!=null){
-                    String type=symbol.type;
-                    if(!s.equals("CharArray")&&!s.equals("IntArray")){
-                        s = switch (type) {
-                            case "IntArray", "ConstIntArray" -> "IntArray";
-                            case "CharArray", "ConstCharArray" -> "CharArray";
-                            case "Int", "ConstIntA", "IntFunc" -> "Int";
-                            case "Char", "ConstChar", "CharFunc" -> "Char";
-                            default -> s;
-                        };
-                    }
+    public static String getTypeOfExp(TreeNode node, int scope){
+
+        if(node==null) return "";
+
+        if(node.nodeType== Enums.V.UnaryExp){
+            TreeNode child=node.children.get(0);
+            if(child.nodeType==Enums.V.PrimaryExp){
+                if(child.children.size()>1){
+                    return getTypeOfExp(child.children.get(1),scope);
                 }
+
+                else if(child.children.get(0).nodeType==Enums.V.LVal){
+                    TreeNode l=child.children.get(0);
+                    SymbolAttribute val=getIndent(l.children.get(0).symbolName, scope);
+                    String ret="";
+                    if(val!=null){
+                        ret=val.type;
+                        ret = switch (ret) {
+                            case "ConstChar" -> "Char";
+                            case "ConstInt" -> "Int";
+                            case "ConstCharArray" -> "CharArray";
+                            case "ConstIntArray" -> "IntArray";
+                            default -> ret;
+                        };
+                        if(l.children.size()>1){
+                            if(ret.equals("IntArray")){
+                                ret="Int";
+                            }
+                            else if(ret.equals("CharArray")){
+                                ret="Char";
+                            }
+                        }
+                    }
+                    return ret;
+                }
+                else if(child.children.get(0).nodeType==Enums.V.Number){
+                    return "Int";
+                }
+
+                else if(child.children.get(0).nodeType== Enums.V.Character){
+                    return "Char";
+                }
+            }
+
+            else if(child.nodeType==Enums.V.IDENFR){
+                SymbolAttribute symbol = getIndent(child.symbolName, scope);
+                if(symbol==null) return "";
+                else{
+                    if(symbol.type.equals("IntFunc")) return "Int";
+                    else if(symbol.type.equals("CharFunc")) return "Char";
+                    else return "";
+                }
+            }
+
+            else if(child.nodeType==Enums.V.UnaryOp) return getTypeOfExp(node.children.get(1),scope);
+
+        }
+
+        String s="";
+        for(TreeNode n: node.children){
+            String s2=getTypeOfExp(n,scope);
+
+            if(s2.equals("Char")||s2.equals("Int")){
+                if(!s.equals("CharArray")&&!s.equals("IntArray")){
+                    s=s2;
+                }
+            }
+            else if(s2.equals("CharArray")||s2.equals("IntArray")){
+                s=s2;
             }
         }
         return s;
     }
 
+//    public static String getTypeOfExp(TreeNode ExpNode, int scope){
+//        ArrayList<TreeNode> sentence=new ArrayList<>();
+//        getAllVt(ExpNode,sentence);
+//        String s="";
+//        for(TreeNode n: sentence){
+//            if(n.nodeType==Enums.V.INTCON||n.nodeType== Enums.V.CHRCON){
+//                if(!s.equals("CharArray")&&!s.equals("IntArray")){
+//                    if(n.nodeType==Enums.V.INTCON){
+//                        s="Int";
+//                    }
+//                    else{
+//                        s="Char";
+//                    }
+//                }
+//            }
+//
+//            if(n.nodeType==Enums.V.IDENFR){
+//                SymbolAttribute symbol=getIndent(n.symbolName, scope);
+//                if(symbol!=null){
+//                    String type=symbol.type;
+//
+//                    //Exp是数组元素
+//                    if(n.father.nodeType==Enums.V.LVal&&n.father.children.size()>1&&n.father.children.get(1).symbolName.equals("[")){
+//                        if(type.equals("IntArray")||type.equals("ConstIntArray")){
+//                            type="Int";
+//                        }
+//                        else if(type.equals("CharArray")||type.equals("ConstCharArray")){
+//                            type="Char";
+//                        }
+//                    }
+//
+//
+//                    if(!s.equals("CharArray")&&!s.equals("IntArray")){
+//                        s = switch (type) {
+//                            case "IntArray", "ConstIntArray" -> "IntArray";
+//                            case "CharArray", "ConstCharArray" -> "CharArray";
+//                            case "Int", "ConstInt", "IntFunc" -> "Int";
+//                            case "Char", "ConstChar", "CharFunc" -> "Char";
+//                            default -> s;
+//                        };
+//                    }
+//                }
+//            }
+//        }
+//        return s;
+//    }
+
     public static void analyseNode(TreeNode currNode, int scope, int outer){
-        outerScope.put(scope, outer);
+        if(!outerScope.containsKey(scope))outerScope.put(scope, outer);
 
         //如果当前节点是语句块, 更改作用域
         if(currNode.nodeType== Enums.V.Block){
@@ -101,15 +194,17 @@ public class SemanticAnalyse {
                                 error(n.children.get(0).line, Enums.ErrorCode.b);
                             }
 
-                            if(s.size()>1 && s.get(1).symbolName.equals("[")){
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstIntArray", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstIntArray"));
-                            }
                             else{
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstInt", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstInt"));
+                                if(s.size()>1 && s.get(1).symbolName.equals("[")){
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstIntArray", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstIntArray"));
+                                }
+                                else{
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstInt", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstInt"));
+                                }
+                                symbolCounter++;
                             }
-                            symbolCounter++;
                         }
                     }
                 }
@@ -123,15 +218,17 @@ public class SemanticAnalyse {
                                 error(n.children.get(0).line, Enums.ErrorCode.b);
                             }
 
-                            if(s.size()>1 && s.get(1).symbolName.equals("[")){
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstCharArray", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstCharArray"));
-                            }
                             else{
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstChar", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstChar"));
+                                if(s.size()>1 && s.get(1).symbolName.equals("[")){
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstCharArray", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstCharArray"));
+                                }
+                                else{
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstChar", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstChar"));
+                                }
+                                symbolCounter++;
                             }
-                            symbolCounter++;
                         }
                     }
                 }
@@ -151,15 +248,17 @@ public class SemanticAnalyse {
                                 error(n.children.get(0).line, Enums.ErrorCode.b);
                             }
 
-                            if(s.size()>1 && s.get(1).symbolName.equals("[")){
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("IntArray", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "IntArray"));
-                            }
                             else{
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("Int", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "Int"));
+                                if(s.size()>1 && s.get(1).symbolName.equals("[")){
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("IntArray", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "IntArray"));
+                                }
+                                else{
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("Int", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "Int"));
+                                }
+                                symbolCounter++;
                             }
-                            symbolCounter++;
                         }
                     }
                 }
@@ -173,15 +272,17 @@ public class SemanticAnalyse {
                                 error(n.children.get(0).line, Enums.ErrorCode.b);
                             }
 
-                            if(s.size()>1 && s.get(1).symbolName.equals("[")){
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("CharArray", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "CharArray"));
-                            }
                             else{
-                                symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("Char", scope));
-                                symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "Char"));
+                                if(s.size()>1 && s.get(1).symbolName.equals("[")){
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("CharArray", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "CharArray"));
+                                }
+                                else{
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("Char", scope));
+                                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "Char"));
+                                }
+                                symbolCounter++;
                             }
-                            symbolCounter++;
                         }
                     }
                 }
@@ -192,13 +293,13 @@ public class SemanticAnalyse {
                 ArrayList<TreeNode> sentence = new ArrayList<>();
                 getAllVt(currNode, sentence);
 
+                boolean isDuplicated=false;
                 if(symbolTable.get(scope).containsKey(currNode.children.get(1).symbolName)){
                     error(currNode.children.get(1).line, Enums.ErrorCode.b);
+                    isDuplicated=true;
                 }
-
-
-
-                boolean flag=hasReturn(currNode);
+                
+                boolean flag=hasReturn(currNode.children.get(currNode.children.size()-1));
 
                 if (sentence.get(0).symbolName.equals("void")) {
 
@@ -207,8 +308,11 @@ public class SemanticAnalyse {
                             error(sentence.get(i).line, Enums.ErrorCode.f);
                         }
                     }
-                    symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("VoidFunc", scope));
-                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "VoidFunc"));
+
+                    if(!isDuplicated){
+                        symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("VoidFunc", scope));
+                        symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "VoidFunc"));
+                    }
                 }
 
                 if (sentence.get(0).symbolName.equals("int")) {
@@ -217,8 +321,10 @@ public class SemanticAnalyse {
                         error(sentence.get(sentence.size()-1).line, Enums.ErrorCode.g);
                     }
 
-                    symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("IntFunc", scope));
-                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "IntFunc"));
+                    if(!isDuplicated){
+                        symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("IntFunc", scope));
+                        symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "IntFunc"));
+                    }
                 }
 
                 if (sentence.get(0).symbolName.equals("char")) {
@@ -227,8 +333,10 @@ public class SemanticAnalyse {
                         error(sentence.get(sentence.size()-1).line, Enums.ErrorCode.g);
                     }
 
-                    symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("CharFunc", scope));
-                    symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "CharFunc"));
+                    if(!isDuplicated){
+                        symbolTable.get(scope).put(sentence.get(1).symbolName, new SymbolAttribute("CharFunc", scope));
+                        symbolEntries.add(new SymbolAttribute(scope, symbolCounter, sentence.get(1).symbolName, "CharFunc"));
+                    }
                 }
 
                 symbolCounter++;
@@ -239,13 +347,7 @@ public class SemanticAnalyse {
             else if(currNode.nodeType == Enums.V.MainFuncDef){
                 ArrayList<TreeNode> sentence = new ArrayList<>();
                 getAllVt(currNode, sentence);
-                boolean flag=false;
-                for (TreeNode node : sentence) {
-                    if (node.symbolName.equals("return")) {
-                        flag = true;
-                        break;
-                    }
-                }
+                boolean flag=hasReturn(currNode.children.get(currNode.children.size()-1));
                 if(!flag){
                     error(sentence.get(sentence.size()-1).line, Enums.ErrorCode.g);
                 }
@@ -259,42 +361,44 @@ public class SemanticAnalyse {
                 getAllVt(currNode, sentence);
 
                 TreeNode FuncDefNode=currNode.father.father;
-                String funName=FuncDefNode.children.get(2).symbolName;
+                String funName=FuncDefNode.children.get(1).symbolName;
                 SymbolAttribute symbol=getIndent(funName, scope);
 
                 if(symbolTable.get(scopeCounter+1).containsKey(sentence.get(1).symbolName)){
                     error(currNode.children.get(1).line, Enums.ErrorCode.b);
                 }
 
-                if(sentence.get(0).symbolName.equals("int")){
-                    if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
-                        if(symbol!=null)symbol.params.add("IntArray");
-
-                        symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("IntArray", scopeCounter+1));
-                        symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "IntArray"));
-                    }
-                    else{
-                        if(symbol!=null)symbol.params.add("Int");
-
-                        symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Int", scopeCounter+1));
-                        symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Int"));
-                    }
-                }
                 else{
-                    if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
-                        if(symbol!=null)symbol.params.add("CharArray");
+                    if(sentence.get(0).symbolName.equals("int")){
+                        if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
+                            if(symbol!=null)symbol.params.add("IntArray");
 
-                        symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("CharArray", scopeCounter+1));
-                        symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "CharArray"));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("IntArray", scopeCounter+1));
+                            symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "IntArray"));
+                        }
+                        else{
+                            if(symbol!=null)symbol.params.add("Int");
+
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Int", scopeCounter+1));
+                            symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Int"));
+                        }
                     }
                     else{
-                        if(symbol!=null)symbol.params.add("Char");
+                        if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
+                            if(symbol!=null)symbol.params.add("CharArray");
 
-                        symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Char", scopeCounter+1));
-                        symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Char"));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("CharArray", scopeCounter+1));
+                            symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "CharArray"));
+                        }
+                        else{
+                            if(symbol!=null)symbol.params.add("Char");
+
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Char", scopeCounter+1));
+                            symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Char"));
+                        }
                     }
+                    symbolCounter++;
                 }
-                symbolCounter++;
             }
 
             //如果当前节点是语句
@@ -315,7 +419,7 @@ public class SemanticAnalyse {
                     boolean flag=false;
                     TreeNode node=currNode;
                     while(node.father!=null){
-                        if(node.nodeType==Enums.V.Stmt&&node.father.nodeType== Enums.V.Stmt){
+                        if(node.nodeType==Enums.V.Stmt&&node.father.nodeType== Enums.V.Stmt&&node.father.children.get(0).symbolName.equals("for")){
                             flag=true;
                             break;
                         }
@@ -363,24 +467,40 @@ public class SemanticAnalyse {
             //如果当前节点是一元表达式
             if(currNode.nodeType==Enums.V.UnaryExp){
                 TreeNode firstChild=currNode.children.get(0);
+
+                //如果当前节点是函数调用
                 if(firstChild.nodeType==Enums.V.IDENFR){
                     SymbolAttribute fParams=getIndent(firstChild.symbolName, scope);
+
+                    //调用未定义函数
                     if(fParams==null){
                         error(firstChild.line, Enums.ErrorCode.c);
                     }
 
-                    else if(firstChild.nodeType==Enums.V.IDENFR&&currNode.children.get(2).nodeType== Enums.V.FuncRParams){
-                        TreeNode rParams=currNode.children.get(2);
-                        int rpCount=(rParams.children.size()+1)/2;
+                    else{
+                        TreeNode rParams=null;
+                        for(TreeNode n:currNode.children){
+                            if(n.nodeType==Enums.V.FuncRParams){
+                                rParams=n;
+                                break;
+                            }
+                        }
+                        int rpCount=0;
+                        if(rParams!=null) rpCount=(rParams.children.size()+1)/2;
+
+                        //参数数量不相等
                         if(rpCount!=fParams.params.size()){
                             error(firstChild.line, Enums.ErrorCode.d);
                         }
-                        else {
+
+                        //检查参数类型是否匹配
+                        else if(rpCount!=0){
                             for(int i=0;i<rpCount;i++){
                                 String type1=fParams.params.get(i);
-                                String type2=getTypeOfExp(rParams.children.get(2*i+1), scope);
-                                if(!type1.equals(type2)){
+                                String type2=getTypeOfExp(rParams.children.get(2*i), scope);
+                                if(!type2.isEmpty()&&!type1.equals(type2) && !((type1.equals("Int")&&type2.equals("Char")) || (type1.equals("Char")&&type2.equals("Int")))){
                                     error(firstChild.line, Enums.ErrorCode.e);
+                                    break;
                                 }
                             }
                         }
@@ -401,9 +521,10 @@ public class SemanticAnalyse {
             File error = new File("./error.txt");
             if(!output.createNewFile()) Lexer.clearFile("./symbol.txt");
             if(!error.createNewFile()) Lexer.clearFile("./error.txt");
-            Lexer.clearFile("./parser.txt");
+            Lexer.clearFile("./symbol.txt");
             FileWriter writer = new FileWriter(output, true);
             FileWriter errorWriter = new FileWriter(error, true);
+
 
             symbolCounter=0;
             scopeCounter = 1;
@@ -412,19 +533,11 @@ public class SemanticAnalyse {
             analyseNode(root, 1, 0);
             Collections.sort(symbolEntries);
 
-
-
             if(!errors.isEmpty()){
                 Collections.sort(errors);
 
-                for(int i=0;i<errors.size();i++){
-                    ErrorPair errorPair=errors.get(i);
-                    if(i==0){
-                        ArrayList<TreeNode> se=new ArrayList<>();
-                        getAllVt(root, se);
-                        for(int j=0;j<60&&j<se.size();j++) errorWriter.write(se.get(j).symbolName+" ");
-                    }
-                    errorWriter.write(errorPair.toString()+'\n');
+                for (ErrorPair errorPair : errors) {
+                    errorWriter.write(errorPair.toString() + '\n');
                     errorWriter.flush();
                 }
             }
@@ -435,6 +548,11 @@ public class SemanticAnalyse {
                 writer.write(s.scope+" "+s.name+" "+s.type+"\n");
             }
             writer.flush();
+
+            if(!errors.isEmpty()){
+                Lexer.clearFile("./symbol.txt");
+                Lexer.clearFile("./parser.txt");
+            }
 
             writer.close();
             errorWriter.close();

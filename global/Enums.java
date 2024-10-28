@@ -2,7 +2,7 @@ package global;
 
 public class Enums {
 
-    public static enum SymbolCode {
+    public enum SymbolCode {
         IDENFR,
         INTCON,
         STRCON,
@@ -46,11 +46,11 @@ public class Enums {
         RBRACE;
     }
 
-    public static enum ErrorCode {
+    public enum ErrorCode {
         a, b, c, d, e, f, g, h, i, j, k, l, m;
     }
 
-    public static enum V {
+    public enum V {
         CompUnit, Decl, ConstDecl, BType, ConstDef, ConstInitVal,
         VarDecl, VarDef, InitVal, FuncDef, MainFuncDef, FuncType,
         FuncFParams, FuncFParam, Block, BlockItem, Stmt, ForStmt,
@@ -62,5 +62,41 @@ public class Enums {
         GETCHARTK, PRINTFTK, RETURNTK, PLUS, MINU, VOIDTK, MULT,
         DIV, MOD, LSS, LEQ, GRE, GEQ, EQL, NEQ, ASSIGN, SEMICN,
         COMMA, LPARENT, RPARENT, LBRACK, RBRACK, LBRACE, RBRACE;;
+    }
+
+    public enum MidCodeOp{
+
+        PLUS, //+
+        MINU, //-
+        MULT, //*
+        DIV,  // /
+        MOD,  // %
+        LSS,  //<
+        LEQ,  //<=
+        GRE,  //>
+        GEQ,  //>=
+        EQL,  //==
+        NEQ,  //!=
+        ASSIGN,  //=
+        MAIN,   //主函数
+        GOTO,  //无条件跳转
+        JUMP,  //跳转标记
+        BZ,    //不满足条件跳转
+        BNZ,   //满足条件跳转
+        PUSH,  //函数调用时参数传递
+        CALL,  //函数调用
+        RET,   //函数返回语句
+        RETVALUE, //有返回值函数返回的结果
+        READ,  //读
+        PRINT, //写
+        LABEL, //标号,区分不同作用域和标号
+        CONST, //常量
+        ARRAY, //数组
+        VAR,   //变量
+        FUNC,  //函数定义
+        PARAM, //函数参数
+        GETARRAY,  //取数组的值  t = a[]
+        PUTARRAY,  //给数组赋值  a[] = t
+        EXIT,  //退出 main最后
     }
 }

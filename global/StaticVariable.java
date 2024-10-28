@@ -23,5 +23,6 @@ public class StaticVariable {
     public static HashMap<Integer, HashMap<String, SymbolAttribute>> symbolTable = new HashMap<>();
     public static ArrayList<SymbolAttribute> symbolEntries = new ArrayList<>();
     public static int symbolCounter=0;
+    public static ArrayList<MidCode> midCodes = new ArrayList<>();
 
 }

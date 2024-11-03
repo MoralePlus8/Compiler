@@ -7,14 +7,26 @@ public class SymbolAttribute implements Comparable<SymbolAttribute> {
     public int order;
     public String type;
     public int scope;
-    public String value;
-    public int address;
+    public int value;
     public ArrayList<String> params=new ArrayList<>();
+    public int stackFrameLength=0;
+    public int offset=0;
+    public boolean isParam=false;
 
-    public SymbolAttribute(){}
+    public SymbolAttribute(String type, int scope, boolean isParam) {
+        this.isParam=isParam;
+        this.type = type;
+        this.scope = scope;
+    }
 
     public SymbolAttribute(String type, int scope) {
         this.type = type;
+        this.scope = scope;
+    }
+
+    public SymbolAttribute(String type, int val, int scope) {
+        this.type = type;
+        this.value = val;
         this.scope = scope;
     }
 
@@ -25,18 +37,6 @@ public class SymbolAttribute implements Comparable<SymbolAttribute> {
         this.type = type;
     }
 
-    public SymbolAttribute(String type, int scope, String value) {
-        this.type = type;
-        this.scope = scope;
-        this.value = value;
-    }
-
-    public SymbolAttribute(String type, int scope, String value, int address) {
-        this.type = type;
-        this.scope = scope;
-        this.value = value;
-        this.address = address;
-    }
 
     @Override
     public int compareTo(SymbolAttribute o) {

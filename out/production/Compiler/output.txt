@@ -1,0 +1,215 @@
+--------------------<LABEL1 begin>       1
+void de()       1
+--------------------<LABEL2 begin>       1
+RET       2
+--------------------<LABEL2 end>       1
+RET       1
+--------------------<LABEL1 end>       1
+--------------------<LABEL3 begin>       1
+int keke()       1
+PARA int i       3
+PARA int j       3
+--------------------<LABEL4 begin>       1
+$t1 = i + j       3
+i = $t1       3
+RET 0       3
+--------------------<LABEL4 end>       1
+RET       1
+--------------------<LABEL3 end>       1
+--------------------<LABEL5 begin>       1
+int jian()       1
+--------------------<LABEL6 begin>       1
+VAR int x       4
+VAR int y       4
+VAR int z       4
+READINT $t2       4
+x = $t2       4
+READINT $t3       4
+y = $t3       4
+$t4 = x - y       4
+z = $t4       4
+RET z       4
+--------------------<LABEL6 end>       1
+RET       1
+--------------------<LABEL5 end>       1
+--------------------<LABEL7 begin>       1
+Main       1
+--------------------<LABEL8 begin>       1
+VAR int a       5
+VAR int b       5
+VAR int c       5
+VAR int d       5
+VAR int e       5
+VAR int f       5
+VAR int g = 1       5
+VAR int h       5
+VAR int j       5
+VAR int k       5
+VAR int l       5
+$t5 = 0 - 1       5
+VAR int o = $t5       5
+VAR int i = 2       5
+VAR int n       5
+VAR int m       5
+VAR int flag = 0       5
+READINT $t6       5
+n = $t6       5
+----------------<JUMPDST LOOP1begin>       5
+$t7 = i < n       5
+if $t7 == 0 then goto JUMP3       5
+GOTO JUMP2       5
+------------<JUMPDST JUMP3>       5
+GOTO LOOP1end       5
+------------<JUMPDST JUMP2>       5
+--------------------<LABEL9 begin>       5
+$t8 = n % i       6
+m = $t8       6
+$t9 = m == 0       6
+if $t9 == 0 then goto JUMP6       6
+GOTO JUMP5       6
+------------<JUMPDST JUMP6>       6
+GOTO JUMP4       6
+------------<JUMPDST JUMP5>       6
+--------------------<LABEL10 begin>       6
+flag = 1       7
+PRINT "0"       7
+PRINT escape \n       7
+--------------------<LABEL10 end>       6
+------------<JUMPDST JUMP4>       6
+$t10 = i + 1       6
+i = $t10       6
+--------------------<LABEL9 end>       5
+----------------<JUMPDST LOOP1post>       5
+GOTO LOOP1begin       5
+----------------<JUMPDST LOOP1end>       5
+CALL jian       5
+RETVALUE $t11       5
+c = $t11       5
+PRINT int c       5
+PRINT escape \n       5
+$t12 = c + 1       5
+d = $t12       5
+$t13 = c * 2       5
+e = $t13       5
+$t14 = e < 5       5
+if $t14 == 0 then goto JUMP10       5
+GOTO JUMP9       5
+------------<JUMPDST JUMP10>       5
+GOTO JUMP7       5
+------------<JUMPDST JUMP9>       5
+--------------------<LABEL11 begin>       5
+$t15 = c % 2       8
+f = $t15       8
+--------------------<LABEL11 end>       5
+GOTO JUMP8       5
+------------<JUMPDST JUMP7>       5
+$t16 = c / 2       5
+f = $t16       5
+------------<JUMPDST JUMP8>       5
+$t17 = 0 == 3       5
+$t18 = f != $t17       5
+if $t18 == 0 then goto JUMP13       5
+GOTO JUMP12       5
+------------<JUMPDST JUMP13>       5
+GOTO JUMP11       5
+------------<JUMPDST JUMP12>       5
+$t19 = g + 1       5
+g = $t19       5
+------------<JUMPDST JUMP11>       5
+$t20 = j + 1       5
+$t21 = i + $t20       5
+o = $t21       5
+--------------------<LABEL12 begin>       5
+--------------------<LABEL12 end>       5
+----------------<JUMPDST LOOP14begin>       5
+if 0 == 0 then goto JUMP16       5
+GOTO JUMP15       5
+------------<JUMPDST JUMP16>       5
+GOTO LOOP14end       5
+------------<JUMPDST JUMP15>       5
+--------------------<LABEL13 begin>       5
+GOTO LOOP14post       10
+--------------------<LABEL13 end>       5
+----------------<JUMPDST LOOP14post>       5
+GOTO LOOP14begin       5
+----------------<JUMPDST LOOP14end>       5
+----------------<JUMPDST LOOP17begin>       5
+if 1 == 0 then goto JUMP19       5
+GOTO JUMP18       5
+------------<JUMPDST JUMP19>       5
+GOTO LOOP17end       5
+------------<JUMPDST JUMP18>       5
+--------------------<LABEL14 begin>       5
+GOTO LOOP17end       11
+--------------------<LABEL14 end>       5
+----------------<JUMPDST LOOP17post>       5
+GOTO LOOP17begin       5
+----------------<JUMPDST LOOP17end>       5
+$t22 = c == d       5
+if $t22 == 0 then goto JUMP22       5
+GOTO JUMP21       5
+------------<JUMPDST JUMP22>       5
+GOTO JUMP20       5
+------------<JUMPDST JUMP21>       5
+--------------------<LABEL15 begin>       5
+$t23 = d >= e       12
+if $t23 == 0 then goto JUMP25       12
+GOTO JUMP24       12
+------------<JUMPDST JUMP25>       12
+GOTO JUMP23       12
+------------<JUMPDST JUMP24>       12
+--------------------<LABEL16 begin>       12
+$t24 = e <= f       13
+if $t24 == 0 then goto JUMP28       13
+GOTO JUMP27       13
+------------<JUMPDST JUMP28>       13
+GOTO JUMP26       13
+------------<JUMPDST JUMP27>       13
+--------------------<LABEL17 begin>       13
+$t25 = f != g       14
+if $t25 == 0 then goto JUMP31       14
+GOTO JUMP30       14
+------------<JUMPDST JUMP31>       14
+GOTO JUMP29       14
+------------<JUMPDST JUMP30>       14
+--------------------<LABEL18 begin>       14
+$t26 = c > 1       15
+if $t26 == 0 then goto JUMP34       15
+GOTO JUMP33       15
+------------<JUMPDST JUMP34>       15
+GOTO JUMP32       15
+------------<JUMPDST JUMP33>       15
+--------------------<LABEL19 begin>       15
+a = 1       16
+--------------------<LABEL19 end>       15
+------------<JUMPDST JUMP32>       15
+--------------------<LABEL18 end>       14
+------------<JUMPDST JUMP29>       14
+--------------------<LABEL17 end>       13
+------------<JUMPDST JUMP26>       13
+--------------------<LABEL16 end>       12
+------------<JUMPDST JUMP23>       12
+--------------------<LABEL15 end>       5
+------------<JUMPDST JUMP20>       5
+PUSH a       5
+PUSH b       5
+CALL keke       5
+RETVALUE $t27       5
+PRINT int d       5
+PRINT escape \n       5
+PRINT int e       5
+PRINT escape \n       5
+PRINT int f       5
+PRINT escape \n       5
+PRINT int g       5
+PRINT escape \n       5
+PRINT "19182620"       5
+PRINT escape \n       5
+PRINT "19182620"       5
+PRINT escape \n       5
+PRINT "19182620"       5
+PRINT escape \n       5
+RET 0       5
+--------------------<LABEL8 end>       1
+RET       1
+--------------------<LABEL7 end>       1

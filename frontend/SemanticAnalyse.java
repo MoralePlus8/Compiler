@@ -1,5 +1,6 @@
 package frontend;
 
+import backend.MidCodeGeneration;
 import global.*;
 
 import java.io.File;
@@ -118,52 +119,10 @@ public class SemanticAnalyse {
         return s;
     }
 
-//    public static String getTypeOfExp(TreeNode ExpNode, int scope){
-//        ArrayList<TreeNode> sentence=new ArrayList<>();
-//        getAllVt(ExpNode,sentence);
-//        String s="";
-//        for(TreeNode n: sentence){
-//            if(n.nodeType==Enums.V.INTCON||n.nodeType== Enums.V.CHRCON){
-//                if(!s.equals("CharArray")&&!s.equals("IntArray")){
-//                    if(n.nodeType==Enums.V.INTCON){
-//                        s="Int";
-//                    }
-//                    else{
-//                        s="Char";
-//                    }
-//                }
-//            }
-//
-//            if(n.nodeType==Enums.V.IDENFR){
-//                SymbolAttribute symbol=getIndent(n.symbolName, scope);
-//                if(symbol!=null){
-//                    String type=symbol.type;
-//
-//                    //Exp是数组元素
-//                    if(n.father.nodeType==Enums.V.LVal&&n.father.children.size()>1&&n.father.children.get(1).symbolName.equals("[")){
-//                        if(type.equals("IntArray")||type.equals("ConstIntArray")){
-//                            type="Int";
-//                        }
-//                        else if(type.equals("CharArray")||type.equals("ConstCharArray")){
-//                            type="Char";
-//                        }
-//                    }
-//
-//
-//                    if(!s.equals("CharArray")&&!s.equals("IntArray")){
-//                        s = switch (type) {
-//                            case "IntArray", "ConstIntArray" -> "IntArray";
-//                            case "CharArray", "ConstCharArray" -> "CharArray";
-//                            case "Int", "ConstInt", "IntFunc" -> "Int";
-//                            case "Char", "ConstChar", "CharFunc" -> "Char";
-//                            default -> s;
-//                        };
-//                    }
-//                }
-//            }
-//        }
-//        return s;
-//    }
+
+
+
+
 
     public static void analyseNode(TreeNode currNode, int scope, int outer){
         if(!outerScope.containsKey(scope))outerScope.put(scope, outer);
@@ -200,7 +159,8 @@ public class SemanticAnalyse {
                                     symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstIntArray"));
                                 }
                                 else{
-                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstInt", scope));
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute(
+                                            "ConstInt", MidCodeGeneration.calConstExp(n.children.get(2).children.get(0), scope),scope));
                                     symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstInt"));
                                 }
                                 symbolCounter++;
@@ -224,7 +184,8 @@ public class SemanticAnalyse {
                                     symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstCharArray"));
                                 }
                                 else{
-                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute("ConstChar", scope));
+                                    symbolTable.get(scope).put(s.get(0).symbolName, new SymbolAttribute(
+                                            "ConstChar", MidCodeGeneration.calConstExp(n.children.get(2).children.get(0), scope), scope));
                                     symbolEntries.add(new SymbolAttribute(scope, symbolCounter, s.get(0).symbolName, "ConstChar"));
                                 }
                                 symbolCounter++;
@@ -373,13 +334,13 @@ public class SemanticAnalyse {
                         if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
                             if(symbol!=null)symbol.params.add("IntArray");
 
-                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("IntArray", scopeCounter+1));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("IntArray", scopeCounter+1, true));
                             symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "IntArray"));
                         }
                         else{
                             if(symbol!=null)symbol.params.add("Int");
 
-                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Int", scopeCounter+1));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Int", scopeCounter+1, true));
                             symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Int"));
                         }
                     }
@@ -387,13 +348,13 @@ public class SemanticAnalyse {
                         if(sentence.size()>2 && sentence.get(2).symbolName.equals("[")){
                             if(symbol!=null)symbol.params.add("CharArray");
 
-                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("CharArray", scopeCounter+1));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("CharArray", scopeCounter+1, true));
                             symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "CharArray"));
                         }
                         else{
                             if(symbol!=null)symbol.params.add("Char");
 
-                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Char", scopeCounter+1));
+                            symbolTable.get(scopeCounter+1).put(sentence.get(1).symbolName, new SymbolAttribute("Char", scopeCounter+1,true));
                             symbolEntries.add(new SymbolAttribute(scopeCounter+1, symbolCounter, sentence.get(1).symbolName, "Char"));
                         }
                     }
@@ -521,7 +482,6 @@ public class SemanticAnalyse {
             File error = new File("./error.txt");
             if(!output.createNewFile()) Lexer.clearFile("./symbol.txt");
             if(!error.createNewFile()) Lexer.clearFile("./error.txt");
-            Lexer.clearFile("./symbol.txt");
             FileWriter writer = new FileWriter(output, true);
             FileWriter errorWriter = new FileWriter(error, true);
 
@@ -541,8 +501,6 @@ public class SemanticAnalyse {
                     errorWriter.flush();
                 }
             }
-
-
 
             for(SymbolAttribute s:symbolEntries){
                 writer.write(s.scope+" "+s.name+" "+s.type+"\n");

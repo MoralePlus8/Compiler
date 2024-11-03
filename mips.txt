@@ -1,0 +1,378 @@
+.data
+s_0: .asciiz,"0"
+s_1: .asciiz,"\n"
+s_2: .asciiz,"\n"
+s_3: .asciiz,"\n"
+s_4: .asciiz,"\n"
+s_5: .asciiz,"\n"
+s_6: .asciiz,"\n"
+s_7: .asciiz,"19182620"
+s_8: .asciiz,"\n"
+s_9: .asciiz,"19182620"
+s_10: .asciiz,"\n"
+s_11: .asciiz,"19182620"
+s_12: .asciiz,"\n"
+.text
+
+j main
+de:
+
+jr $ra
+
+jr $ra
+
+
+keke:
+
+lw $t0,0($fp)
+lw $t1,-4($fp)
+add $t2,$t0,$t1
+sw $t2,-8($fp)
+lw $t0,-8($fp)
+sw $t0,0($fp)
+li $v0,0
+jr $ra
+
+jr $ra
+
+
+jian:
+
+li $v0,5
+syscall
+sw $v0,-12($fp)
+lw $t0,-12($fp)
+sw $t0,0($fp)
+li $v0,5
+syscall
+sw $v0,-16($fp)
+lw $t0,-16($fp)
+sw $t0,-4($fp)
+lw $t0,0($fp)
+lw $t1,-4($fp)
+sub $t2,$t0,$t1
+sw $t2,-20($fp)
+lw $t0,-20($fp)
+sw $t0,-8($fp)
+lw $v0,-8($fp)
+jr $ra
+
+jr $ra
+
+
+main:
+move $fp,$sp
+add $sp,$sp,-204
+
+li $t0,1
+sw $t0,-24($fp)
+li $t0,0
+li $t1,1
+sub $t2,$t0,$t1
+sw $t2,-44($fp)
+lw $t0,-44($fp)
+sw $t0,-48($fp)
+li $t0,2
+sw $t0,-52($fp)
+li $t0,0
+sw $t0,-64($fp)
+li $v0,5
+syscall
+sw $v0,-68($fp)
+lw $t0,-68($fp)
+sw $t0,-56($fp)
+LOOP1begin:
+lw $t0,-52($fp)
+lw $t1,-56($fp)
+slt $t2,$t0,$t1
+sw $t2,-72($fp)
+lw $t0,-72($fp)
+beqz $t0,JUMP3
+j JUMP2
+JUMP3:
+j LOOP1end
+JUMP2:
+
+lw $t0,-56($fp)
+lw $t1,-52($fp)
+div $t0,$t1
+mfhi $t2
+sw $t2,-76($fp)
+lw $t0,-76($fp)
+sw $t0,-60($fp)
+lw $t0,-60($fp)
+li $t1,0
+seq $t2,$t0,$t1
+sw $t2,-80($fp)
+lw $t0,-80($fp)
+beqz $t0,JUMP6
+j JUMP5
+JUMP6:
+j JUMP4
+JUMP5:
+
+li $t0,1
+sw $t0,-64($fp)
+la $a0,s_0
+li $v0,4
+syscall
+la $a0,s_1
+li $v0,4
+syscall
+
+JUMP4:
+lw $t0,-52($fp)
+li $t1,1
+add $t2,$t0,$t1
+sw $t2,-84($fp)
+lw $t0,-84($fp)
+sw $t0,-52($fp)
+
+LOOP1post:
+j LOOP1begin
+LOOP1end:
+add $sp,$sp,-44
+sw $ra,4($sp)
+sw $ra,8($fp)
+add $fp,$sp,44
+jal jian
+lw $fp,8($sp)
+lw $ra,4($sp)
+add $sp,$sp,44
+sw $v0,-88($fp)
+lw $t0,-88($fp)
+sw $t0,-8($fp)
+lw $a0,-8($fp)
+li $v0,1
+syscall
+la $a0,s_2
+li $v0,4
+syscall
+lw $t0,-8($fp)
+li $t1,1
+add $t2,$t0,$t1
+sw $t2,-92($fp)
+lw $t0,-92($fp)
+sw $t0,-12($fp)
+lw $t0,-8($fp)
+li $t1,2
+mul $t2,$t0,$t1
+sw $t2,-96($fp)
+lw $t0,-96($fp)
+sw $t0,-16($fp)
+lw $t0,-16($fp)
+li $t1,5
+slt $t2,$t0,$t1
+sw $t2,-100($fp)
+lw $t0,-100($fp)
+beqz $t0,JUMP10
+j JUMP9
+JUMP10:
+j JUMP7
+JUMP9:
+
+lw $t0,-8($fp)
+li $t1,2
+div $t0,$t1
+mfhi $t2
+sw $t2,-104($fp)
+lw $t0,-104($fp)
+sw $t0,-20($fp)
+
+j JUMP8
+JUMP7:
+lw $t0,-8($fp)
+li $t1,2
+div $t0,$t1
+mflo $t2
+sw $t2,-108($fp)
+lw $t0,-108($fp)
+sw $t0,-20($fp)
+JUMP8:
+li $t0,0
+li $t1,3
+seq $t2,$t0,$t1
+sw $t2,-112($fp)
+lw $t0,-20($fp)
+lw $t1,-112($fp)
+sne $t2,$t0,$t1
+sw $t2,-116($fp)
+lw $t0,-116($fp)
+beqz $t0,JUMP13
+j JUMP12
+JUMP13:
+j JUMP11
+JUMP12:
+lw $t0,-24($fp)
+li $t1,1
+add $t2,$t0,$t1
+sw $t2,-120($fp)
+lw $t0,-120($fp)
+sw $t0,-24($fp)
+JUMP11:
+lw $t0,-32($fp)
+li $t1,1
+add $t2,$t0,$t1
+sw $t2,-124($fp)
+lw $t0,-52($fp)
+lw $t1,-124($fp)
+add $t2,$t0,$t1
+sw $t2,-128($fp)
+lw $t0,-128($fp)
+sw $t0,-48($fp)
+
+
+LOOP14begin:
+li $t0,0
+beqz $t0,JUMP16
+j JUMP15
+JUMP16:
+j LOOP14end
+JUMP15:
+
+j LOOP14post
+
+LOOP14post:
+j LOOP14begin
+LOOP14end:
+LOOP17begin:
+li $t0,1
+beqz $t0,JUMP19
+j JUMP18
+JUMP19:
+j LOOP17end
+JUMP18:
+
+j LOOP17end
+
+LOOP17post:
+j LOOP17begin
+LOOP17end:
+lw $t0,-8($fp)
+lw $t1,-12($fp)
+seq $t2,$t0,$t1
+sw $t2,-132($fp)
+lw $t0,-132($fp)
+beqz $t0,JUMP22
+j JUMP21
+JUMP22:
+j JUMP20
+JUMP21:
+
+lw $t0,-12($fp)
+lw $t1,-16($fp)
+sge $t2,$t0,$t1
+sw $t2,-136($fp)
+lw $t0,-136($fp)
+beqz $t0,JUMP25
+j JUMP24
+JUMP25:
+j JUMP23
+JUMP24:
+
+lw $t0,-16($fp)
+lw $t1,-20($fp)
+sle $t2,$t0,$t1
+sw $t2,-140($fp)
+lw $t0,-140($fp)
+beqz $t0,JUMP28
+j JUMP27
+JUMP28:
+j JUMP26
+JUMP27:
+
+lw $t0,-20($fp)
+lw $t1,-24($fp)
+sne $t2,$t0,$t1
+sw $t2,-144($fp)
+lw $t0,-144($fp)
+beqz $t0,JUMP31
+j JUMP30
+JUMP31:
+j JUMP29
+JUMP30:
+
+lw $t0,-8($fp)
+li $t1,1
+sgt $t2,$t0,$t1
+sw $t2,-148($fp)
+lw $t0,-148($fp)
+beqz $t0,JUMP34
+j JUMP33
+JUMP34:
+j JUMP32
+JUMP33:
+
+li $t0,1
+sw $t0,0($fp)
+
+JUMP32:
+
+JUMP29:
+
+JUMP26:
+
+JUMP23:
+
+JUMP20:
+lw $t0,0($fp)
+sw $t0,0($sp)
+lw $t0,-4($fp)
+sw $t0,-4($sp)
+add $sp,$sp,-24
+sw $ra,4($sp)
+sw $ra,8($fp)
+add $fp,$sp,24
+jal keke
+lw $fp,8($sp)
+lw $ra,4($sp)
+add $sp,$sp,24
+sw $v0,-152($fp)
+lw $a0,-12($fp)
+li $v0,1
+syscall
+la $a0,s_3
+li $v0,4
+syscall
+lw $a0,-16($fp)
+li $v0,1
+syscall
+la $a0,s_4
+li $v0,4
+syscall
+lw $a0,-20($fp)
+li $v0,1
+syscall
+la $a0,s_5
+li $v0,4
+syscall
+lw $a0,-24($fp)
+li $v0,1
+syscall
+la $a0,s_6
+li $v0,4
+syscall
+la $a0,s_7
+li $v0,4
+syscall
+la $a0,s_8
+li $v0,4
+syscall
+la $a0,s_9
+li $v0,4
+syscall
+la $a0,s_10
+li $v0,4
+syscall
+la $a0,s_11
+li $v0,4
+syscall
+la $a0,s_12
+li $v0,4
+syscall
+li $v0,10
+syscall
+
+li $v0,10
+syscall
+

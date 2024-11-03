@@ -1,3 +1,5 @@
+import backend.MidCodeGeneration;
+import backend.MipsGeneration;
 import frontend.GrammarAnalyse;
 import frontend.Lexer;
 import frontend.SemanticAnalyse;
@@ -14,5 +16,7 @@ public class Compiler {
         Lexer.lexer();
         GrammarAnalyse.parser();
         SemanticAnalyse.treeParser();
+        MidCodeGeneration.generateMidcode();
+        MipsGeneration.generateMipsCode();
     }
 }

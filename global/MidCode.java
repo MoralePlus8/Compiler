@@ -5,17 +5,19 @@ public class MidCode {
     public String a=null;
     public String b=null;
     public String r=null;
+    public int scope;
 
-    public MidCode(Enums.MidCodeOp op, String r, String a, String b){
+    public MidCode(Enums.MidCodeOp op, String r, String a, String b, int scope){
         this.op = op;
         this.r = r;
         this.a = a;
         this.b = b;
+        this.scope = scope;
     }
 
     @Override
     public String toString(){
-        return switch (op){
+        String ret= switch (op){
             case PLUS->r+" = "+a+" + "+b;
             case MINU->r+" = "+a+" - "+b;
             case MULT->r+" = "+a+" * "+b;
@@ -28,27 +30,27 @@ public class MidCode {
             case EQL->r+" = "+a+" == "+b;
             case NEQ->r+" = "+a+" != "+b;
             case ASSIGN->r+" = "+a;
-            case GOTO->"GOTO "+r;
-            case BZ->"if "+a+" == 0 then goto "+r;
-            case BNZ->"if "+b+" == 0 then goto "+r;
-            case JUMP->a==null?"JUMPTO JUMP"+r:"JUMPTO LOOP"+r+a;
+            case GOTO->a==null?"GOTO JUMP"+r:"GOTO LOOP"+r+a;
+            case BZ->"if "+a+" == 0 then goto JUMP"+r;
+            case JUMP->a==null?"------------<JUMPDST JUMP"+r+">":"----------------<JUMPDST LOOP"+r+a+">";
             case PUSH->"PUSH "+r;
             case CALL->"CALL "+r;
-            case RET->"RET";
-            case RETVALUE -> "RET "+r;
-            case READ -> "READ "+r;
-            case PRINT -> "PRINT "+r;
-            case LABEL -> "LABEL "+r+" "+a;
-            case CONST -> null;
+            case RET->r==null?"RET":"RET "+r;
+            case RETVALUE -> "RETVALUE "+r;
+            case READINT -> "READINT "+r;
+            case READCHAR -> "READCHAR "+r;
+            case PRINT -> a==null?"PRINT \""+r+"\"":"PRINT "+a+" "+r;
+            case LABEL -> "--------------------<"+r+" "+a+">";
             case ARRAY -> "ARRAY "+a+" "+r+"["+b+"]";
             case VAR -> b==null?"VAR "+a+" "+r:"VAR "+a+" "+r+" = "+b;
             case FUNC -> a+" "+r+"()";
-            case PARAM -> "PARA "+a+" "+r;
+            case PARAM -> !b.equals("arr")?"PARA "+a+" "+r:"PARA "+a+" "+r+"[]";
             case MAIN -> "Main";
-            case GETARRAY -> r+" = "+a+" ["+b+"]";
-            case PUTARRAY -> a+" ["+b+"]"+" = "+r;
+            case GETARRAY -> r+" = "+a+"["+b+"]";
+            case PUTARRAY -> r+"["+a+"]"+" = "+b;
             case EXIT -> "EXIT";
         };
+        return ret+"       "+scope;
     }
 
 }

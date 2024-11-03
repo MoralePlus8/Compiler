@@ -6,7 +6,6 @@ import java.util.HashMap;
 public class StaticVariable {
     public static char character;
     public static boolean isNote;
-    public static int intNumber;
     public static int characterCounter;
     public static int lineCounter;
     public static String code;
@@ -24,5 +23,10 @@ public class StaticVariable {
     public static ArrayList<SymbolAttribute> symbolEntries = new ArrayList<>();
     public static int symbolCounter=0;
     public static ArrayList<MidCode> midCodes = new ArrayList<>();
-
+    public static int TCount=0;//四元式结果计数器
+    public static int labelCounter=0;
+    public static int jumpCounter=0;
+    public static ArrayList<MipsCode> mipsCodes = new ArrayList<>();
+    public static ArrayList<MipsCode> mipsData= new ArrayList<>();
+    public static int dataCounter=0;
 }

@@ -8,8 +8,9 @@ import global.SymbolAttribute;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.HashMap;
 
-import static frontend.SemanticAnalyse.getIndent;
+import static frontend.SemanticAnalyse.getIdent;
 import static global.Enums.mipsCodeOp.*;
 import static global.StaticVariable.*;
 
@@ -33,22 +34,13 @@ public class MipsGeneration {
         int cnt=0;
         String funcName=null;
         for(MidCode midCode:midCodes){
-            if(midCode.op.equals(Enums.MidCodeOp.VAR)||midCode.op.equals(Enums.MidCodeOp.PLUS)
-                    ||midCode.op.equals(Enums.MidCodeOp.MINU)||midCode.op.equals(Enums.MidCodeOp.MULT)
-                    ||midCode.op.equals(Enums.MidCodeOp.DIV)||midCode.op.equals(Enums.MidCodeOp.MOD)
-                    ||midCode.op.equals(Enums.MidCodeOp.LSS)||midCode.op.equals(Enums.MidCodeOp.LEQ)
-                    ||midCode.op.equals(Enums.MidCodeOp.GRE)||midCode.op.equals(Enums.MidCodeOp.GEQ)
-                    ||midCode.op.equals(Enums.MidCodeOp.EQL)||midCode.op.equals(Enums.MidCodeOp.NEQ)
-                    ||midCode.op.equals(Enums.MidCodeOp.ASSIGN)||midCode.op.equals(Enums.MidCodeOp.PARAM)
-                    ||midCode.op.equals(Enums.MidCodeOp.READINT)||midCode.op.equals(Enums.MidCodeOp.READCHAR)){
-                cnt+=4;
-            }
-            else if(midCode.op.equals(Enums.MidCodeOp.ARRAY)){
+
+            if(midCode.op.equals(Enums.MidCodeOp.ARRAY)){
                 cnt+=4*Integer.parseInt(midCode.b);
             }
             else if(midCode.op.equals(Enums.MidCodeOp.FUNC)||midCode.op.equals(Enums.MidCodeOp.MAIN)){
                 if(funcName!=null){
-                    SymbolAttribute s= getIndent(funcName, 1);
+                    SymbolAttribute s= getIdent(funcName, 1);
                     if(s!=null){
                         s.stackFrameLength=cnt+8;//多余8B存储$ra和$fp
                     }
@@ -56,8 +48,22 @@ public class MipsGeneration {
                 cnt=0;
                 funcName=midCode.r;
             }
+            else{
+                cnt+=4;
+            }
         }
         return cnt+8;//多余8B存储$ra和$fp
+    }
+
+    private static SymbolAttribute getSymbol(String name, int currScope){
+        int temp=currScope;
+        while(temp!=0){
+            if(symbolTable.get(temp).containsKey(name)&&mipsTable.get(temp).containsKey(name)){
+                return symbolTable.get(temp).get(name);
+            }
+            temp=outerScope.get(temp);
+        }
+        return null;
     }
 
     //将普通变量ident的值加载到dst寄存器中
@@ -67,7 +73,7 @@ public class MipsGeneration {
             add(li, dst, ident);
         }
         else{
-            SymbolAttribute s=getIndent(ident, scope);
+            SymbolAttribute s= getSymbol(ident, scope);
             if(s!=null){
                 //全局变量
                 if(s.scope==1) {
@@ -83,11 +89,18 @@ public class MipsGeneration {
 
     //将ident数组的index下标处的值加载到dst寄存器
     static void loadArray(String ident, String index, int scope, String dst){
-        SymbolAttribute s=getIndent(ident, scope);
+        SymbolAttribute s= getSymbol(ident, scope);
         if(s!=null){
 
-            if(s.isParam){
+            char c=index.charAt(0);
+            if(Character.isDigit(c)||c=='-'){
                 add(li, "$t0", index);
+            }
+            else{
+                loadVar(index,scope,"$t0");
+            }
+
+            if(s.isParam){
                 add(sll, "$t0", "$t0", "2");
                 add(lw, "$t1",  String.valueOf(-s.offset), "$fp");
                 add(add, "$t1", "$t1", "$t0");
@@ -96,13 +109,11 @@ public class MipsGeneration {
 
             else {
                 if(s.scope==1){
-                    add(li, "$t0", index);
                     add(sll, "$t0", "$t0", "2");
                     add(add, "$t1", "$t0", "$gp");
                     add(lw, dst, String.valueOf(s.offset), "$t1");
                 }
                 else{
-                    add(li, "$t0", index);
                     add(sll, "$t0", "$t0", "2");
                     add(add, "$t1", "$t0", "$fp");
                     add(lw, dst, String.valueOf(-s.offset), "$t1");
@@ -115,29 +126,37 @@ public class MipsGeneration {
 
     //将src寄存器中的值存储到ident数组的index下标处
     static void storeArray(String ident, String index, int scope, String src){
-        SymbolAttribute s=getIndent(ident, scope);
+        SymbolAttribute s= getSymbol(ident, scope);
         if(s!=null) {
-            if(s.isParam){
 
+            char c=index.charAt(0);
+            if(Character.isDigit(c)||c=='-'){
                 add(li, "$t1", index);
+            }
+            else{
+                loadVar(index,scope,"$t1");
+            }
+
+            if(s.isParam){
                 add(sll, "$t1", "$t1", "2");
                 add(lw, "$t2", String.valueOf(-s.offset), "$fp");
                 add(add, "$t2", "$t2", "$t1");
+                if(s.type.equals("CharArray")||s.type.equals("ConstCharArray")) add(and, src, src, "0xFF");
                 add(sw, src, "0", "$t2");
 
             }
 
             else{
                 if(s.scope==1) {
-                    add(li, "$t1", index);
                     add(sll, "$t1", "$t1", "2");
-                    add(add, "$t1", "$t1", "gp");
+                    add(add, "$t1", "$t1", "$gp");
+                    if(s.type.equals("CharArray")||s.type.equals("ConstCharArray")) add(and, src, src, "0xFF");
                     add(sw, src, String.valueOf(s.offset), "$t1");
                 }
                 else{
-                    add(li, "$t1", index);
                     add(sll, "$t1", "$t1", "2");
-                    add(add, "$t1", "$t1", "fp");
+                    add(add, "$t1", "$t1", "$fp");
+                    if(s.type.equals("CharArray")||s.type.equals("ConstCharArray")) add(and, src, src, "0xFF");
                     add(sw, src, String.valueOf(-s.offset), "$t1");
                 }
             }
@@ -147,16 +166,18 @@ public class MipsGeneration {
 
     //将src寄存器中的值存储到ident变量中
     static void storeVar(String ident, int scope, String src){
-        SymbolAttribute s=getIndent(ident, scope);
+        SymbolAttribute s= getSymbol(ident, scope);
         if(s==null){
-            s=new SymbolAttribute("int", scope);
+            s=new SymbolAttribute("Int", scope);
             s.offset=varOffset;
             symbolTable.get(scope).put(ident, s);
+            mipsTable.get(scope).put(ident, s);
             if(scope==1) add(sw, src, String.valueOf(varOffset), "$gp");
             else add(sw, src, String.valueOf(-varOffset), "$fp");
             varOffset+=4;
         }
         else{
+            if(s.type.equals("Char")) add(and, src, src, "0xFF");
             if(s.scope==1) add(sw, src, String.valueOf(s.offset), "$gp");
             else add(sw, src, String.valueOf(-s.offset), "$fp");
         }
@@ -169,6 +190,7 @@ public class MipsGeneration {
     static int paramCounter=0;
 
     static void getMipsCode(){
+
 
         int mainLength=getStackLengthAndOffset();
         int funcLength=0;
@@ -294,23 +316,31 @@ public class MipsGeneration {
 
                 //参数是标识符
                 else {
-                    SymbolAttribute s=getIndent(midCode.r, midCode.scope);
+                    SymbolAttribute s= getSymbol(midCode.r, midCode.scope);
                     if(s!=null){
 
                         //参数是普通变量
-                        if(s.type.equals("Int")||s.type.equals("Char")){
+                        if(s.type.equals("Int")||s.type.equals("Char")||s.type.equals("ConstInt")||s.type.equals("ConstChar")){
                             loadVar(midCode.r, midCode.scope, "$t0");
                             add(sw, "$t0", String.valueOf(-paramOffset), "$sp");
                         }
 
                         //参数是数组
                         else{
-                            if(s.scope==1){
-                                add(add, "$t0", String.valueOf(s.offset), "$gp");//是全局变量，根据$gp寄存器求地址
+                            if(s.isParam){
+                                add(lw, "$t0", String.valueOf(-s.offset), "$fp");
                             }
-                            else{
-                                add(add, "$t0", String.valueOf(-s.offset), "$fp");//是局部变量。根据$fp寄存器求地址
+                            else {
+                                if(s.scope==1){
+                                    add(li, "$t0", String.valueOf(s.offset));
+                                    add(add, "$t0", "$t0", "$gp");//是全局变量，根据$gp寄存器求地址
+                                }
+                                else{
+                                    add(li, "$t0", String.valueOf(-s.offset));
+                                    add(add, "$t0", "$t0", "$fp");//是局部变量。根据$fp寄存器求地址
+                                }
                             }
+
                             add(sw, "$t0", String.valueOf(-paramOffset), "$sp");
                         }
                     }
@@ -320,13 +350,13 @@ public class MipsGeneration {
 
             else if(midCode.op.equals(Enums.MidCodeOp.CALL)){
                 paramOffset=0;
-                SymbolAttribute func=getIndent(midCode.r, midCode.scope);
+                SymbolAttribute func= getSymbol(midCode.r, midCode.scope);
                 if(func!=null){
                     funcLength=func.stackFrameLength;
                 }
                 add(add, "$sp", "$sp", String.valueOf(-funcLength));
                 add(sw, "$ra", "4", "$sp");
-                add(sw, "$ra", "8", "$fp");
+                add(sw, "$fp", "8", "$sp");
                 add(add, "$fp", "$sp", String.valueOf(funcLength));
                 add(jal, midCode.r);
                 add(lw, "$fp", "8", "$sp");
@@ -350,6 +380,7 @@ public class MipsGeneration {
             }
 
             else if(midCode.op.equals(Enums.MidCodeOp.RETVALUE)){
+                if(midCode.a.equals("char")) add(and, "$v0", "$v0", "0xFF");
                 storeVar(midCode.r, midCode.scope, "$v0");
             }
 
@@ -393,8 +424,10 @@ public class MipsGeneration {
             }
 
             else if(midCode.op.equals(Enums.MidCodeOp.ARRAY)){
-                SymbolAttribute s=getIndent(midCode.r, midCode.scope);
+                mipsTable.get(midCode.scope).put(midCode.r, null);
+                SymbolAttribute s= getSymbol(midCode.r, midCode.scope);
                 if(s!=null){
+
                     if(midCode.scope==1){
                         s.offset=varOffset;
                         varOffset+=Integer.parseInt(midCode.b)*4;
@@ -409,8 +442,10 @@ public class MipsGeneration {
             }
 
             else if(midCode.op.equals(Enums.MidCodeOp.VAR)){
-                SymbolAttribute s=getIndent(midCode.r, midCode.scope);
+                mipsTable.get(midCode.scope).put(midCode.r, null);
+                SymbolAttribute s= getSymbol(midCode.r, midCode.scope);
                 if(s!=null) {
+
                     s.offset = varOffset;
                     varOffset += 4;
 
@@ -429,7 +464,8 @@ public class MipsGeneration {
                     add(j, "main");
                 }
 
-                SymbolAttribute func=getIndent(midCode.r, midCode.scope);
+                mipsTable.get(midCode.scope).put(midCode.r, null);
+                SymbolAttribute func= getSymbol(midCode.r, midCode.scope);
                 if(func!=null){
                     varOffset=func.params.size()*4;
                     add(label, midCode.r);
@@ -438,11 +474,13 @@ public class MipsGeneration {
             }
 
             else if(midCode.op.equals(Enums.MidCodeOp.PARAM)){
-                SymbolAttribute s=getIndent(midCode.r, midCode.scope);
+                mipsTable.get(midCode.scope).put(midCode.r, null);
+                SymbolAttribute s= getSymbol(midCode.r, midCode.scope);
                 if(s!=null){
                     s.isParam=true;
                     s.offset = paramCounter*4;
                     paramCounter++;
+                    //if(paramCounter==1&&midCode.b.equals("arr")&&midCode.a.equals("char")) exit();
                 }
             }
 

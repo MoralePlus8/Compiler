@@ -17,17 +17,20 @@ public class SymbolAttribute implements Comparable<SymbolAttribute> {
         this.isParam=isParam;
         this.type = type;
         this.scope = scope;
+        this.order = order;
     }
 
     public SymbolAttribute(String type, int scope) {
         this.type = type;
         this.scope = scope;
+        this.order = order;
     }
 
     public SymbolAttribute(String type, int val, int scope) {
         this.type = type;
         this.value = val;
         this.scope = scope;
+        this.order = order;
     }
 
     public SymbolAttribute(int scope, int order, String name, String type) {

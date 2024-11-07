@@ -15,7 +15,7 @@ public class SemanticAnalyse {
         errors.add(new ErrorPair(line, errorCode));
     }
 
-    public static SymbolAttribute getIndent(String name, int currScope){
+    public static SymbolAttribute getIdent(String name, int currScope){
         int temp=currScope;
         while(temp!=0){
             if(symbolTable.get(temp).containsKey(name)){
@@ -58,7 +58,7 @@ public class SemanticAnalyse {
 
                 else if(child.children.get(0).nodeType==Enums.V.LVal){
                     TreeNode l=child.children.get(0);
-                    SymbolAttribute val=getIndent(l.children.get(0).symbolName, scope);
+                    SymbolAttribute val= getIdent(l.children.get(0).symbolName, scope);
                     String ret="";
                     if(val!=null){
                         ret=val.type;
@@ -90,7 +90,7 @@ public class SemanticAnalyse {
             }
 
             else if(child.nodeType==Enums.V.IDENFR){
-                SymbolAttribute symbol = getIndent(child.symbolName, scope);
+                SymbolAttribute symbol = getIdent(child.symbolName, scope);
                 if(symbol==null) return "";
                 else{
                     if(symbol.type.equals("IntFunc")) return "Int";
@@ -131,6 +131,7 @@ public class SemanticAnalyse {
         if(currNode.nodeType== Enums.V.Block){
             scopeCounter++;
             symbolTable.put(scopeCounter+1, new HashMap<>());
+            mipsTable.put(scopeCounter+1, new HashMap<>());
             int temp=scopeCounter;
             for (TreeNode n : currNode.children) {
                 analyseNode(n, temp, scope);
@@ -323,7 +324,7 @@ public class SemanticAnalyse {
 
                 TreeNode FuncDefNode=currNode.father.father;
                 String funName=FuncDefNode.children.get(1).symbolName;
-                SymbolAttribute symbol=getIndent(funName, scope);
+                SymbolAttribute symbol= getIdent(funName, scope);
 
                 if(symbolTable.get(scopeCounter+1).containsKey(sentence.get(1).symbolName)){
                     error(currNode.children.get(1).line, Enums.ErrorCode.b);
@@ -367,7 +368,7 @@ public class SemanticAnalyse {
                 TreeNode firstChild=currNode.children.get(0);
                 if(firstChild.nodeType==Enums.V.LVal&&currNode.children.get(1).nodeType==Enums.V.ASSIGN){
                     String name=firstChild.children.get(0).symbolName;
-                    SymbolAttribute symbol=getIndent(name, scope);
+                    SymbolAttribute symbol= getIdent(name, scope);
                     if(symbol!=null){
                         String type=symbol.type;
                         if(type.equals("ConstChar") || type.equals("ConstCharArray") || type.equals("ConstInt") || type.equals("ConstIntArray")){
@@ -406,7 +407,7 @@ public class SemanticAnalyse {
             //如果当前节点是ForStmt
             else if(currNode.nodeType==Enums.V.ForStmt){
                 TreeNode n=currNode.children.get(0).children.get(0);
-                SymbolAttribute symbol=getIndent(n.symbolName, scope);
+                SymbolAttribute symbol= getIdent(n.symbolName, scope);
                 if(symbol!=null){
                     String type=symbol.type;
                     if(type.equals("ConstChar") || type.equals("ConstCharArray") || type.equals("ConstInt") || type.equals("ConstIntArray")){
@@ -419,7 +420,7 @@ public class SemanticAnalyse {
             //如果当前节点是左值表达式
             else if(currNode.nodeType==Enums.V.LVal){
                 String name = currNode.children.get(0).symbolName;
-                SymbolAttribute symbol=getIndent(name, scope);
+                SymbolAttribute symbol= getIdent(name, scope);
                 if(symbol==null) {
                     error(currNode.children.get(0).line, Enums.ErrorCode.c);
                 }
@@ -431,7 +432,7 @@ public class SemanticAnalyse {
 
                 //如果当前节点是函数调用
                 if(firstChild.nodeType==Enums.V.IDENFR){
-                    SymbolAttribute fParams=getIndent(firstChild.symbolName, scope);
+                    SymbolAttribute fParams= getIdent(firstChild.symbolName, scope);
 
                     //调用未定义函数
                     if(fParams==null){
@@ -490,6 +491,8 @@ public class SemanticAnalyse {
             scopeCounter = 1;
             symbolTable.put(1, new HashMap<>());
             symbolTable.put(2, new HashMap<>());
+            mipsTable.put(1,new HashMap<>());
+            mipsTable.put(2,new HashMap<>());
             analyseNode(root, 1, 0);
             Collections.sort(symbolEntries);
 

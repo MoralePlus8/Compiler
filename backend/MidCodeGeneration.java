@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+import static frontend.SemanticAnalyse.getIdent;
 import static global.StaticVariable.*;
 
 public class MidCodeGeneration {
@@ -27,7 +28,7 @@ public class MidCodeGeneration {
             case '"' -> 34;
             case '\'' -> 39;
             case '\\' -> 92;
-            case '\0' -> 0;
+            case '0' -> 0;
             default -> -1;
         };
     }
@@ -117,15 +118,15 @@ public class MidCodeGeneration {
         if(node.children.get(1).symbolName.equals("[")){//常量数组定义
             String t1=ConstExpHandler(node.children.get(2));
             add(Enums.MidCodeOp.ARRAY, r, type, t1, scope);
-            ConstInitValHandler(node.children.get(5), r, type, scope);
+            ConstInitValHandler(node.children.get(5), r, type, scope, Integer.parseInt(t1));
         }
 
         else{//普通常量定义
-            ConstInitValHandler(node.children.get(2), r, type, scope);
+            ConstInitValHandler(node.children.get(2), r, type, scope, 1);
         }
     }
 
-    static void ConstInitValHandler(TreeNode node, String ident, String type, int scope){
+    static void ConstInitValHandler(TreeNode node, String ident, String type, int scope, int length){
 
         if(node.children.get(0).symbolName.equals("{")){//数组初值
             int cnt=0;
@@ -136,6 +137,14 @@ public class MidCodeGeneration {
                     cnt++;
                 }
             }
+        }
+
+        else if(node.children.get(0).nodeType.equals(Enums.V.STRCON)){
+            ArrayList<Integer> arr=strCon2intArr(node.children.get(0).symbolName);
+            for(int i=0;i<arr.size();i++){
+                add(Enums.MidCodeOp.PUTARRAY, ident, String.valueOf(i), arr.get(i).toString(), scope);
+            }
+            for(int i=arr.size();i<length;i++) add(Enums.MidCodeOp.PUTARRAY, ident, String.valueOf(i), "0", scope);
         }
 
         else{//非数组初值
@@ -176,16 +185,17 @@ public class MidCodeGeneration {
         }
 
         else{                   //分配初值
+            String t1="1";
             if(node.children.get(1).symbolName.equals("[")){
-                String t1=ConstExpHandler(node.children.get(2));
+                t1=ConstExpHandler(node.children.get(2));
                 add(Enums.MidCodeOp.ARRAY, ident, type, t1, scope);
             }
 
-            InitValHandler(node.children.get(initIndex), ident, type, scope);
+            InitValHandler(node.children.get(initIndex), ident, type, scope, Integer.parseInt(t1));
         }
     }
 
-    static void InitValHandler(TreeNode node, String ident, String type, int scope){
+    static void InitValHandler(TreeNode node, String ident, String type, int scope, int length){
         TreeNode child=node.children.get(0);
         if(child.nodeType.equals(Enums.V.Exp)){         //普通变量初值
             String t1=ExpHandler(child, scope);
@@ -198,6 +208,7 @@ public class MidCodeGeneration {
             for(int i=0;i<arr.size();i++){
                 add(Enums.MidCodeOp.PUTARRAY, ident, String.valueOf(i), arr.get(i).toString(), scope);
             }
+            for(int i=arr.size();i<length;i++) add(Enums.MidCodeOp.PUTARRAY, ident, String.valueOf(i), "0", scope);
         }
 
         else{                                           //数组形式初值
@@ -361,8 +372,6 @@ public class MidCodeGeneration {
 
             jumpCounter+=2;
             int temp=jumpCounter;
-            add(Enums.MidCodeOp.JUMP, jump(temp-1), "begin", null, scope);
-
             TreeNode fs1=null, fs2=null, cond=null;
             if(node.children.get(2).nodeType.equals(Enums.V.ForStmt)){
                 fs1=node.children.get(2);
@@ -381,6 +390,8 @@ public class MidCodeGeneration {
             if(fs1!=null){
                 ForStmtHandler(fs1, scope);
             }
+
+            add(Enums.MidCodeOp.JUMP, jump(temp-1), "begin", null, scope);
 
             if(cond!=null){
                 CondHandler(cond, temp, scope);
@@ -536,7 +547,7 @@ public class MidCodeGeneration {
 
         else if(child.nodeType.equals(Enums.V.IDENFR)){ //UnaryExp → Ident '(' [FuncRParams] ')'
             String ident=node.children.get(0).symbolName;
-            SymbolAttribute sym=SemanticAnalyse.getIndent(ident, 1);
+            SymbolAttribute sym= getIdent(ident, 1);
             String funcType= sym==null?"":sym.type;
 
             FuncRParamsHandler(node.children.get(2), scope);
@@ -572,11 +583,17 @@ public class MidCodeGeneration {
     }
 
     static void FuncRParamsHandler(TreeNode node, int scope){
+
+        ArrayList<String> params=new ArrayList<>();
         for(TreeNode child : node.children){
             if(child.nodeType.equals(Enums.V.Exp)){
-                String t1=ExpHandler(child, scope);
-                add(Enums.MidCodeOp.PUSH, t1, null, null, scope);
+                params.add(ExpHandler(child, scope));
+
             }
+        }
+
+        for(String t: params){
+            add(Enums.MidCodeOp.PUSH, t, null, null, scope);
         }
     }
 
@@ -719,7 +736,7 @@ public class MidCodeGeneration {
                 return calConstExp(node.children.get(1),scope);
             }
             if(fc.nodeType.equals(Enums.V.LVal)){
-                SymbolAttribute s=SemanticAnalyse.getIndent(fc.children.get(0).symbolName, scope);
+                SymbolAttribute s= getIdent(fc.children.get(0).symbolName, scope);
                 return s==null?0:s.value;
             }
             if(fc.nodeType.equals(Enums.V.Number)){

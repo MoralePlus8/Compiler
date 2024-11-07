@@ -104,6 +104,7 @@ public class Enums {
         sub,// -
         mul,// *
         div,// /
+        and,//
         slt,// <
         sle,// <=
         sgt,// >

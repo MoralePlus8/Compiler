@@ -32,7 +32,7 @@ public class MipsCode {
     @Override
     public String toString() {
         return switch(op){
-            case add, sub, mul, slt, sle, sgt, sge, seq, sne, sll -> op +" "+t1+","+t2+","+t3;
+            case add, sub, mul, slt, sle, sgt, sge, seq, sne, sll, and-> op +" "+t1+","+t2+","+t3;
             case li, la, move, beqz, div -> op +" "+t1+","+t2;
             case mflo, mfhi, j, jal, jr -> op +" "+t1;
             case lw, sw -> op +" "+t1+","+t2+"("+t3+")";

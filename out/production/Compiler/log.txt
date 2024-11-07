@@ -1,191 +1,87 @@
-    <LABEL 1 start>
-void de( )
-RET null
-RET null
-    <LABEL 1 end>
-    <LABEL 2 start>
-int keke( )
-para int i
-para int j
-t&1 = i + j
-i = t&1
-RET  0
-RET null
-    <LABEL 2 end>
-    <LABEL 3 start>
-int jian( )
-var int x
-var int y
-var int z
-scan x
-scan y
-t&2 = x - y
-z = t&2
-RET  z
-RET null
-    <LABEL 3 end>
-    <LABEL 4 start>
+99  111 110 115
+116 105 110 116
+97  61  51  55
+42  50  50  47
+49  55  44  98
+61  50  53  59
+10  99  111 110
+115 116 105 110
+116 120 61  45
+40  40  51  37
+========================
+52  41  42  49
+50  49  45  49
+42  50  41  43
+54  59  10  99
+111 110 115 116
+105 110 116 121
+61  43  50  51
+47  43  45  49
+49  42  40  51
+45  43  50  41
+==============================
+59  10  105 110
+116 109 97  105
+110 40  41  123
+10  112 114 105
+110 116 102 40
+34  50  48  51
+55  52  50  55
+50  92  110 34
+41  59  10  112
+114 105 110 116
+==============================
+102 40  34  97
+61  37  100 44
+98  61  37  100
+44  120 61  37
+100 44  121 61
+37  100 47  47
+34  44  97  44
+98  44  120 44
+121 41  59  10
+105 110 116 105
+=============================================
+59  10  99  111
+110 115 116 105
+110 116 97  61
+49  48  44  112
+61  49  48  47
+50  43  49  59
+10  105 110 116
+112 49  59  10
+112 49  61  103
+101 116 105 110
+====================================
+t   (   )   ;
+10  112 49  61
+112 49  42  40
+50  43  49  45
+40  45  43  45
+49  45  49  41
+41  59  10  105
+61  48  59  10
+112 114 105 110
+116 102 40  34
+==================================
 
-MAIN
 
-var int a
-var int b
-var int c
-var int d
-var int e
-var int f
-var int g = 1
-var int h
-var int j
-var int k
-var int l
-t&3 = 0 - 1
-var int o = t&3
-var int i = 2
-var int n
-var int m
-var int flag = 0
-scan n
-        <JUMPDST LOOP1---begin>
-t&4 = i < n
-if t&4 == 0 then goto Jump3
-GOTO Jump2
-        <JUMPDST JUMP3>
-GOTO Loop1end
-        <JUMPDST JUMP2>
-    <LABEL 5 start>
-t&5 = n % i
-m = t&5
-t&6 = m == 0
-if t&6 == 0 then goto Jump6
-GOTO Jump5
-        <JUMPDST JUMP6>
-GOTO Jump4
-        <JUMPDST JUMP5>
-    <LABEL 6 start>
-flag = 1
-print "0\n"
-    <LABEL 6 end>
-        <JUMPDST JUMP4>
-t&7 = i + 1
-i = t&7
-    <LABEL 5 end>
-GOTO Loop1begin
-        <JUMPDST LOOP1---end>
-call jian
-retvalue t&8
-c = t&8
-print c
-print "\n"
-t&9 = c + 1
-d = t&9
-t&10 = c * 2
-e = t&10
-t&11 = e < 5
-if t&11 == 0 then goto Jump10
-GOTO Jump9
-        <JUMPDST JUMP10>
-GOTO Jump7
-        <JUMPDST JUMP9>
-    <LABEL 7 start>
-t&12 = c % 2
-f = t&12
-    <LABEL 7 end>
-GOTO Jump8
-        <JUMPDST JUMP7>
-t&13 = c / 2
-f = t&13
-        <JUMPDST JUMP8>
-t&15 = 0 == 3
-t&14 = f != t&15
-if t&14 == 0 then goto Jump13
-GOTO Jump12
-        <JUMPDST JUMP13>
-GOTO Jump11
-        <JUMPDST JUMP12>
-t&16 = g + 1
-g = t&16
-        <JUMPDST JUMP11>
-t&18 = j + 1
-t&17 = i + t&18
-o = t&17
-    <LABEL 8 start>
-    <LABEL 8 end>
-        <JUMPDST LOOP14---begin>
-if 0 == 0 then goto Jump16
-GOTO Jump15
-        <JUMPDST JUMP16>
-GOTO Loop14end
-        <JUMPDST JUMP15>
-    <LABEL 9 start>
-GOTO Loop14begin
-    <LABEL 9 end>
-GOTO Loop14begin
-        <JUMPDST LOOP14---end>
-t&19 = c == d
-if t&19 == 0 then goto Jump19
-GOTO Jump18
-        <JUMPDST JUMP19>
-GOTO Jump17
-        <JUMPDST JUMP18>
-    <LABEL 10 start>
-t&20 = d >= e
-if t&20 == 0 then goto Jump22
-GOTO Jump21
-        <JUMPDST JUMP22>
-GOTO Jump20
-        <JUMPDST JUMP21>
-    <LABEL 11 start>
-t&21 = e <= f
-if t&21 == 0 then goto Jump25
-GOTO Jump24
-        <JUMPDST JUMP25>
-GOTO Jump23
-        <JUMPDST JUMP24>
-    <LABEL 12 start>
-t&22 = f != g
-if t&22 == 0 then goto Jump28
-GOTO Jump27
-        <JUMPDST JUMP28>
-GOTO Jump26
-        <JUMPDST JUMP27>
-    <LABEL 13 start>
-t&23 = c > 1
-if t&23 == 0 then goto Jump31
-GOTO Jump30
-        <JUMPDST JUMP31>
-GOTO Jump29
-        <JUMPDST JUMP30>
-    <LABEL 14 start>
-a = 1
-    <LABEL 14 end>
-        <JUMPDST JUMP29>
-    <LABEL 13 end>
-        <JUMPDST JUMP26>
-    <LABEL 12 end>
-        <JUMPDST JUMP23>
-    <LABEL 11 end>
-        <JUMPDST JUMP20>
-    <LABEL 10 end>
-        <JUMPDST JUMP17>
-push a
-push b
-call keke
-retvalue t&24
-print d
-print "\n"
-print e
-print "\n"
-print f
-print "\n"
-print g
-print "\n"
-print "19182620\n"
-print "19182620\n"
-print "19182620\n"
-RET  0
-RET null
-    <LABEL 4 end>
 
------------------EXIT--------------
 
+
+
+
+
+const int a=37*22/17,b=25;
+const int x=-((3%4)*121-1*2)+6;
+const int y=+23/+23/+-11*(3-+2);
+int main (){
+printf("20374272\n");
+printf("a=%d,b=%d,x=%d,y=%d//",a,b,x,y);
+int i;
+const int a=10,p=10/2+1;
+int p1;
+p1=getint();
+p1=p1*(2+1-(-+-1-1));
+i=0;
+printf("

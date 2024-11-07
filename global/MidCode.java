@@ -33,14 +33,16 @@ public class MidCode {
             case GOTO->a==null?"GOTO JUMP"+r:"GOTO LOOP"+r+a;
             case BZ->"if "+a+" == 0 then goto JUMP"+r;
             case JUMP->a==null?"------------<JUMPDST JUMP"+r+">":"----------------<JUMPDST LOOP"+r+a+">";
+
+
             case PUSH->"PUSH "+r;
             case CALL->"CALL "+r;
-            case RET->r==null?"RET":"RET "+r;
-            case RETVALUE -> "RETVALUE "+r;
-            case READINT -> "READINT "+r;
-            case READCHAR -> "READCHAR "+r;
-            case PRINT -> a==null?"PRINT \""+r+"\"":"PRINT "+a+" "+r;
-            case LABEL -> "--------------------<"+r+" "+a+">";
+            case RET->r==null?"RET":"RET "+r;//===============================================
+            case RETVALUE -> "RETVALUE "+r;//=====================================
+            case READINT -> "READINT "+r;//======================================
+            case READCHAR -> "READCHAR "+r;//==================================
+            case PRINT -> a==null?"PRINT \""+r+"\"":"PRINT "+a+" "+r;//=============================
+            case LABEL -> "--------------------<"+r+" "+a+">";//================================
             case ARRAY -> "ARRAY "+a+" "+r+"["+b+"]";
             case VAR -> b==null?"VAR "+a+" "+r:"VAR "+a+" "+r+" = "+b;
             case FUNC -> a+" "+r+"()";
@@ -48,7 +50,7 @@ public class MidCode {
             case MAIN -> "Main";
             case GETARRAY -> r+" = "+a+"["+b+"]";
             case PUTARRAY -> r+"["+a+"]"+" = "+b;
-            case EXIT -> "EXIT";
+            case EXIT -> "EXIT";//========================================
         };
         return ret+"       "+scope;
     }
